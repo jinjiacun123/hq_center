@@ -83,32 +83,47 @@ public class LiuWeiStockWebServer extends Thread {
             return;
         }
 
-        new ChartToDBThread().start();
+        new ChartToDBThread().start();//按品种，单个分时或者k线同步数据
         new RTSnapshotHandleThread().start();
-        new SignalHandleThread().start();
+        new SignalHandleThread().start();//开收盘的信号处理过程
 
         /*
             init trade list,empty list as trade queue
+            初始化ServerContext.getTradeTimeMap()，交易时间节点
         */
         doTradeTimeList();
         /*
             trade basic info,include open and close
+            初始化 ServerContext.getExchangeMap()，交易所开收盘基本信息
         */
         doExchangeList();
         /*
             init symbol(sh,sz),all code load list
+            初始化ServerContext.getMasterMap()，当前交易所包含的品种及其名称
         */
         doMasterList();
         /*
             load minute and kline
+            从数据库加载分时及其k线
         */
         doInitData();
 
         //new StockDividendThread().start();
 
+        /**
+         * 每读一次dbf延迟半秒，把读取到的新数据加入到实时处理队列中
+         */
         new ReadDBFSHThread().start();
         new ReadDBFSZThread().start();
+        //开启两种定时器
+        /**
+         * 处理节假日，每20秒触发一次
+         */
         doSignalTimer();//singal trigger
+        /**
+         * 处理分时及其k线同步数据库，没1分钟触发一次
+         * 触发调度处理：按品种，批量同步数据库
+         */
         doChartToDBTimer();//chart trigger
 
     }
