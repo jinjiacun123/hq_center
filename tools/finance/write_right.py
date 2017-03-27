@@ -1,6 +1,8 @@
+# -*- coding:utf-8 -*- 
+
 import MySQLdb
 import struct 
- 
+#import codecs
  
 def write_to_db(code,publish_data,giving_stock,placing_stock,giving_price,bonus):
 	try:
@@ -17,7 +19,9 @@ def write_to_db(code,publish_data,giving_stock,placing_stock,giving_price,bonus)
 	     
 	     
 def read_pwr():
-        file = open(r'F:\tools\LiuWeiStockWebServer\test\right.pwr', "rb")
+        path = 'F:/tools/hq_center/tools/finance/除权数据.pwr'
+        uipath = unicode(path , "utf8")
+        file = open(uipath, 'rb')
         file.seek(12,0)
         while True:
                 code = file.read(8)
@@ -29,12 +33,14 @@ def read_pwr():
                         bytes = file.read(16)
                         (giving_stock,placing_stock,giving_price,bonus) = struct.unpack("ffff",bytes) 
                         print "%d,%f,%f,%f,%f" % (time,giving_stock,placing_stock,giving_price,bonus)
+               
                         write_to_db(code, 
                                     time, 
                                     round(giving_stock,2),
                                     round(placing_stock),
                                     round(giving_price),
                                     float('%.2f' % bonus))
+               
                         bytes = file.read(4)
                         time, = struct.unpack("i", bytes)
 	pass
