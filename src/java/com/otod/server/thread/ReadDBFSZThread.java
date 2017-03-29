@@ -6,6 +6,7 @@ package com.otod.server.thread;
 
 import com.linuxense.javadbf.DBFReader;
 import com.otod.bean.ServerContext;
+import com.otod.bean.quote.finance.FinanceData;
 import com.otod.bean.quote.master.MasterData;
 import com.otod.bean.quote.snapshot.BidAsk;
 import com.otod.bean.quote.snapshot.Snapshot;
@@ -90,6 +91,16 @@ public class ReadDBFSZThread extends Thread {
 
             int date = Integer.parseInt(DateUtil.formatDate(null, "yyyyMMdd"));
             int time =  Integer.parseInt(DateUtil.formatDate(null, "HHmmss"));
+            double pClose, lastPrice, lowPrice, hightPrice,volume;
+            double ltag;
+            
+            Map<String, Double> listSortMMap = ServerContext.getListSortMMap();//成交额
+            Map<String, Double> listSortRaiseMap = ServerContext.getListSortRaiseMap();//涨跌幅
+            Map<String, Double> listSortAmplitudeMap = ServerContext.getListSortAmplitudeMap();//振幅
+            Map<String, Double> listSortTurnoverRateMap =  ServerContext.getListSortTurnoverRateMap();//换手率
+            Map<String, Double> listSortEarmingMap =  ServerContext.getListSortEarmingMap();//市盈率
+            Map<String, FinanceData> financeMap  = ServerContext.getFinanceMap();
+            FinanceData financeData = null;
             while ((rowValues = reader.nextRecord()) != null) {
                 if (rowValues[0] == null) {
                     continue;
@@ -104,7 +115,6 @@ public class ReadDBFSZThread extends Thread {
                 if (masterData == null) {
                     continue;
                 }
-                Map<String, Double> listSortMMap = ServerContext.getListSortMMap();
                 StockSnapshot stockSnapshot = new StockSnapshot();
                 stockSnapshot.setSymbol(symbol);
                 stockSnapshot.setCnName(String.valueOf(rowValues[1]).trim());
@@ -119,6 +129,20 @@ public class ReadDBFSZThread extends Thread {
                 stockSnapshot.setTurnover(Double.parseDouble(String.valueOf(rowValues[6]).trim()));
                  //new add
                 listSortMMap.put(symbol, Double.parseDouble(String.valueOf(rowValues[4]).trim()));
+                pClose = Double.parseDouble(String.valueOf(rowValues[2]).trim());
+                lastPrice = Double.parseDouble(String.valueOf(rowValues[7]).trim());
+                lowPrice = Double.parseDouble(String.valueOf(rowValues[6]).trim());
+                hightPrice = Double.parseDouble(String.valueOf(rowValues[5]).trim());
+                volume = Double.parseDouble(String.valueOf(rowValues[10]).trim());
+                listSortRaiseMap.put(symbol, (lastPrice-pClose)/lastPrice);
+                listSortAmplitudeMap.put(symbol, (hightPrice - lowPrice)/lowPrice);
+                financeData = (FinanceData)financeMap.get(symbol);
+                if(financeData != null && financeData.getGxrq() != 0){
+                    //listSortTurnoverRateMap.put(symbol, volume/5);
+                    //System.out.println(financeData.getLtag());
+                    listSortTurnoverRateMap.put(symbol, volume/financeData.getLtag());
+                    listSortEarmingMap.put(symbol, stockSnapshot.getLastPrice()/financeData.getShly());
+                }
                 BidAsk ask1 = new BidAsk();
                 ask1.setPrice(Double.parseDouble(String.valueOf(rowValues[15]).trim()));
                 ask1.setVolume(getVolume(String.valueOf(rowValues[16]).trim()));
