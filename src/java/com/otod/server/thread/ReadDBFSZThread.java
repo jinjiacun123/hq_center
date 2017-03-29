@@ -18,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -103,8 +104,10 @@ public class ReadDBFSZThread extends Thread {
                 if (masterData == null) {
                     continue;
                 }
+                Map<String, Double> listSortMMap = ServerContext.getListSortMMap();
                 StockSnapshot stockSnapshot = new StockSnapshot();
                 stockSnapshot.setSymbol(symbol);
+                stockSnapshot.setCnName(String.valueOf(rowValues[1]).trim());
                 stockSnapshot.setQuoteDate(date);
                 stockSnapshot.setQuoteTime(time);
                 stockSnapshot.setOpenPrice(Double.parseDouble(String.valueOf(rowValues[3]).trim()));
@@ -114,6 +117,8 @@ public class ReadDBFSZThread extends Thread {
                 stockSnapshot.setpClose(Double.parseDouble(String.valueOf(rowValues[2]).trim()));
                 stockSnapshot.setVolume(getVolume(String.valueOf(rowValues[5]).trim()));
                 stockSnapshot.setTurnover(Double.parseDouble(String.valueOf(rowValues[6]).trim()));
+                 //new add
+                listSortMMap.put(symbol, Double.parseDouble(String.valueOf(rowValues[4]).trim()));
                 BidAsk ask1 = new BidAsk();
                 ask1.setPrice(Double.parseDouble(String.valueOf(rowValues[15]).trim()));
                 ask1.setVolume(getVolume(String.valueOf(rowValues[16]).trim()));
@@ -159,10 +164,10 @@ public class ReadDBFSZThread extends Thread {
                 StockSnapshot hSnapshot = (StockSnapshot) ServerContext.getTempSnapshotMap().get(symbol);
                 if (hSnapshot == null) {
                     ServerContext.getRtSnapshotQueue().add(stockSnapshot.clone());
-                    ServerContext.getTempSnapshotMap().put(stockSnapshot.symbol, stockSnapshot);
+                    //ServerContext.getTempSnapshotMap().put(stockSnapshot.symbol, stockSnapshot);
                 } else {
                     if (!hSnapshot.equalsTemp(stockSnapshot)) {
-                        hSnapshot.updateTempSnapshot(stockSnapshot);
+                        //hSnapshot.updateTempSnapshot(stockSnapshot);
                         ServerContext.getRtSnapshotQueue().add(stockSnapshot);
                     }
                 }

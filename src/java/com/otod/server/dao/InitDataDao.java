@@ -11,6 +11,7 @@ import com.otod.bean.quote.kline.KLineData;
 import com.otod.bean.quote.kline.KLineQueue;
 import com.otod.bean.quote.master.MasterData;
 import com.otod.bean.quote.minute.MinuteData;
+import com.otod.bean.quote.finance.FinanceData;
 import com.otod.bean.quote.minute.MinuteQueue;
 import com.otod.dao.DayDao;
 
@@ -20,6 +21,7 @@ import com.otod.dao.Minute30Dao;
 import com.otod.dao.Minute5Dao;
 import com.otod.dao.Minute60Dao;
 import com.otod.dao.MinuteDao;
+import com.otod.dao.FinanceDao;
 import com.otod.dao.MonthDao;
 import com.otod.dao.WeekDao;
 import com.otod.db.Connector;
@@ -32,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
@@ -49,14 +52,28 @@ public class InitDataDao {
     public void doWork() {
         try {
             System.out.println("开始加载！");
-            doInitMinute();
-            doInitKLine();
+            doInitMinute();//初始化分钟信息
+            doInitKLine();//初始化k线信息
+            doInitFinance();//初始化财务信息
             System.out.println("加载完成！");
         } finally {
             connector.close();
         }
     }
 
+    private void doInitFinance(){
+        FinanceDao financeDao = new FinanceDao();
+        financeDao.setConnector(connector);
+        Map<String, FinanceData> financeMap = ServerContext.getFinanceMap();
+        for (Map.Entry<String, MasterData> entryset : ServerContext.getMasterMap().entrySet()) {
+            String symbol = (String) entryset.getKey();
+            System.out.println(symbol);
+            FinanceData financeData = financeDao.getBySymbol(symbol);
+            financeMap.put(symbol, financeData);
+        }
+        System.out.println("初始化财务数据");
+    }
+    
     private void doInitMinute() {
         MinuteDao minuteDao = new MinuteDao();
         minuteDao.setConnector(connector);

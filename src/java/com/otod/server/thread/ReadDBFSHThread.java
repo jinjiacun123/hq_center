@@ -6,6 +6,8 @@ package com.otod.server.thread;
 
 import com.linuxense.javadbf.DBFReader;
 import com.otod.bean.ServerContext;
+import com.otod.bean.quote.StockDividend;
+import com.otod.bean.quote.finance.FinanceData;
 import com.otod.bean.quote.master.MasterData;
 import com.otod.bean.quote.snapshot.BidAsk;
 import com.otod.bean.quote.snapshot.Snapshot;
@@ -19,8 +21,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -92,7 +97,21 @@ public class ReadDBFSHThread extends Thread {
 
             int date = Integer.parseInt(DateUtil.formatDate(null, "yyyyMMdd"));
             int time =  Integer.parseInt(DateUtil.formatDate(null, "HHmmss"));
+            double pClose, lastPrice, lowPrice, hightPrice,volume;
+            double ltag;
+            
+            Map<String, Double> listSortMMap = ServerContext.getListSortMMap();//成交额
+            Map<String, Double> listSortRaiseMap = ServerContext.getListSortRaiseMap();//涨跌幅
+            Map<String, Double> listSortAmplitudeMap = ServerContext.getListSortAmplitudeMap();//振幅
+            Map<String, Double> listSortTurnoverRateMap =  ServerContext.getListSortTurnoverRateMap();//换手率
+            Map<String, Double> listSortEarmingMap =  ServerContext.getListSortEarmingMap();//市盈率
+            Map<String, FinanceData> financeMap  = ServerContext.getFinanceMap();
+            FinanceData financeData = null;
+           // int i = 0;
             while ((rowValues = reader.nextRecord()) != null) {
+             //   i++;
+               // if(i>2)
+               //     break;
                 if (rowValues[0] == null) {
                     continue;
                 }
@@ -106,8 +125,10 @@ public class ReadDBFSHThread extends Thread {
                 if (masterData == null) {
                     continue;
                 }
+                
                 StockSnapshot stockSnapshot = new StockSnapshot();
                 stockSnapshot.setSymbol(symbol);
+                stockSnapshot.setCnName(String.valueOf(rowValues[1]).trim());
                 stockSnapshot.setQuoteDate(date);
                 stockSnapshot.setQuoteTime(time);
                 stockSnapshot.setOpenPrice(Double.parseDouble(String.valueOf(rowValues[3]).trim()));
@@ -117,6 +138,22 @@ public class ReadDBFSHThread extends Thread {
                 stockSnapshot.setpClose(Double.parseDouble(String.valueOf(rowValues[2]).trim()));
                 stockSnapshot.setVolume(getVolume(String.valueOf(rowValues[10]).trim()));
                 stockSnapshot.setTurnover(Double.parseDouble(String.valueOf(rowValues[4]).trim()));
+                //new add
+                listSortMMap.put(symbol, Double.parseDouble(String.valueOf(rowValues[4]).trim()));
+                pClose = Double.parseDouble(String.valueOf(rowValues[2]).trim());
+                lastPrice = Double.parseDouble(String.valueOf(rowValues[7]).trim());
+                lowPrice = Double.parseDouble(String.valueOf(rowValues[6]).trim());
+                hightPrice = Double.parseDouble(String.valueOf(rowValues[5]).trim());
+                volume = Double.parseDouble(String.valueOf(rowValues[10]).trim());
+                listSortRaiseMap.put(symbol, (lastPrice-pClose)/lastPrice);
+                listSortAmplitudeMap.put(symbol, (hightPrice - lowPrice)/lowPrice);
+                financeData = (FinanceData)financeMap.get(symbol);
+                if(financeData != null && financeData.getGxrq() != 0){
+                    //listSortTurnoverRateMap.put(symbol, volume/5);
+                    //System.out.println(financeData.getLtag());
+                    listSortTurnoverRateMap.put(symbol, volume/financeData.getLtag());
+                    listSortEarmingMap.put(symbol, stockSnapshot.getLastPrice()/financeData.getShly());
+                }
                 BidAsk bid1 = new BidAsk();
 //                System.out.println(String.valueOf(rowValues[14]).trim());
                 bid1.setPrice(Double.parseDouble(String.valueOf(rowValues[8]).trim()));
@@ -159,15 +196,20 @@ public class ReadDBFSHThread extends Thread {
                 ask5.setVolume(getVolume(String.valueOf(rowValues[29]).trim()));
                 stockSnapshot.getAskQueue().add(0, ask5);
 
-                StockSnapshot hSnapshot = (StockSnapshot) ServerContext.getTempSnapshotMap().get(symbol);
+                StockSnapshot hSnapshot = (StockSnapshot) ServerContext.getTempSnapshotMap().get(symbol);//品种为健值的基本数据体
+                /**
+                 * 按照品种，进行分别操作：
+                 * 1.不存在，则添加，作为基本数据;
+                 * 2.存在，如果不相同，进行更新临时，添加实时队列
+                 */
                 if (hSnapshot == null) {
                     ServerContext.getRtSnapshotQueue().add(stockSnapshot.clone());
-                    ServerContext.getTempSnapshotMap().put(stockSnapshot.symbol, stockSnapshot);
                     ServerContext.getSnapshotMap().put(stockSnapshot.symbol, stockSnapshot);
+                    ServerContext.getTempSnapshotMap().put(stockSnapshot.symbol, stockSnapshot);
                 } else {
                     if (!hSnapshot.equalsTemp(stockSnapshot)) {
                         hSnapshot.updateTempSnapshot(stockSnapshot);
-                        hSnapshot.updateSnapshot(stockSnapshot);
+                        hSnapshot.updateSnapshot(hSnapshot);
                         ServerContext.getRtSnapshotQueue().add(stockSnapshot);
                     }
                 }

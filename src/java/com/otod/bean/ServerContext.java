@@ -9,6 +9,7 @@ import com.otod.bean.quote.exchange.ExchangeData;
 import com.otod.bean.quote.kline.KLineQueue;
 import com.otod.bean.quote.master.MasterData;
 import com.otod.bean.quote.minute.MinuteQueue;
+import com.otod.bean.quote.finance.FinanceData;
 import com.otod.bean.quote.snapshot.ForexSnapshot;
 import com.otod.bean.quote.snapshot.Snapshot;
 import com.otod.bean.quote.snapshot.SnapshotQueue;
@@ -18,6 +19,8 @@ import com.otod.bean.quote.tradetime.TimeNode;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  *
@@ -53,7 +56,14 @@ public class ServerContext {
     private static LinkedBlockingQueue<Snapshot> quoteToDBQueue = new LinkedBlockingQueue<Snapshot>();
     private static boolean authorizeFlag = true;
     private static ConcurrentHashMap<String, List<StockDividend>> stockDividendMap = new ConcurrentHashMap<String, List<StockDividend>>();
-
+    //new add
+    private static Map<String, Double> listSortMMap = new HashMap<String, Double>();//成交额
+    private static Map<String, Double> listSortRaiseMap = new HashMap<String, Double>();//涨跌幅
+    private static Map<String, Double> listSortAmplitudeMap = new HashMap<String, Double>();//振幅
+    private static Map<String, Double> listSortTurnoverRateMap = new HashMap<String, Double>();//换手率
+    private static Map<String, Double> listSortEarmingMap = new HashMap<String, Double>();//市盈率
+    //finance
+    private static Map<String, FinanceData> financeMap  = new HashMap<String, FinanceData>();
 
     public static ConcurrentHashMap<String, Snapshot> getSnapshotMap() {
         return snapshotMap;
@@ -275,4 +285,51 @@ public class ServerContext {
         ServerContext.stockDividendMap = stockDividendMap;
     }
     
+    public static Map<String, Double> getListSortMMap(){
+        return listSortMMap;
+    }
+    
+    public static void setListSortMMap(Map<String, Double> listSortMMap){
+        ServerContext.listSortMMap = listSortMMap;
+    }
+    
+    public static Map<String, Double> getListSortRaiseMap(){
+        return listSortRaiseMap;
+    }
+    
+    public static void setListSortRaiseMap(Map<String, Double> listSortRaiseMap){
+        ServerContext.listSortRaiseMap = listSortRaiseMap;
+    }
+    
+    public static Map<String, Double> getListSortAmplitudeMap(){
+        return listSortAmplitudeMap;
+    }
+    
+    public static void setListSortAmplitudeMap(Map<String, Double> listSortAmplitudeMap){
+        ServerContext.listSortAmplitudeMap = listSortAmplitudeMap;
+    }
+    
+    public static Map<String, Double> getListSortTurnoverRateMap(){
+        return listSortTurnoverRateMap;
+    }
+    
+    public static void setListSortTurnoverRateMap(Map<String, Double> listSortTurnoverRateMap){
+        ServerContext.listSortTurnoverRateMap = listSortTurnoverRateMap;
+    }
+    
+    public static Map<String, Double> getListSortEarmingMap(){
+        return listSortEarmingMap;
+    }
+    
+    public static void setListSortEarmingMap(Map<String, Double> listSortEarmingMap){
+        ServerContext.listSortEarmingMap = listSortEarmingMap;
+    }
+    
+    public static Map<String, FinanceData> getFinanceMap(){
+        return financeMap;
+    }
+    
+    public static void setFinance(Map<String, FinanceData> financeMap){
+        ServerContext.financeMap = financeMap;
+    }
 }
