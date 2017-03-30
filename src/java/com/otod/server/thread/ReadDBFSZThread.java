@@ -42,7 +42,9 @@ public class ReadDBFSZThread extends Thread {
     }
 
     private void doReadDBF() {
-        String path = Config.DBF_PATH + "\\SJSHQ.DBF";
+        String path = Config.DBF_PATH 
+                    + Config.FILE_SPLITE
+                    + Config.DBF_SZ;
         InputStream is = null;
         ByteBuffer buffer = null;
         byte[] temp = null;

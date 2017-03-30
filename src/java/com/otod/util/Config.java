@@ -21,5 +21,8 @@ public class Config {
     public final static String JDBC_URL = rb_db.getString("jdbc.url");
     public final static String JDBC_USERNAME = rb_db.getString("jdbc.username");
     public final static String JDBC_PASSWORD = rb_db.getString("jdbc.password");
-    public final static String DBF_PATH = rb_config.getString("dbfpath");
+    public final static String DBF_PATH    = rb_config.getString("dbfPath");
+    public final static String FILE_SPLITE = rb_config.getString("fileSplite");
+    public final static String DBF_SH      = rb_config.getString("dbfSh");
+    public final static String DBF_SZ      = rb_config.getString("dbfSz");
 }

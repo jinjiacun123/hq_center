@@ -284,8 +284,8 @@ public class LiuWeiStockWebServer extends Thread {
     }
 
     public void doSHMaster() {
-        String path = Config.DBF_PATH + "/SHOW2003.DBF";
-        System.out.println(path);
+        System.out.println(Config.DBF_SH);
+        String path = Config.DBF_PATH + Config.FILE_SPLITE + Config.DBF_SH;
         InputStream is = null;
         try {
             ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024 * 2);
@@ -347,7 +347,7 @@ public class LiuWeiStockWebServer extends Thread {
     }
 
     public void doSZMaster() {
-        String path = Config.DBF_PATH + "\\SJSHQ.DBF";
+        String path = Config.DBF_PATH + Config.FILE_SPLITE + Config.DBF_SZ;
         System.out.println(path);
         InputStream is = null;
         try {

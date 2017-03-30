@@ -112,8 +112,14 @@ public class LSortServlet extends HttpServlet{
         PrintWriter out = response.getWriter();
         StringBuffer valueBuffer = new StringBuffer();
 
-        StockSnapshot stockSnapshot = null;    
-         for (int i = 0; i < list.size(); i++) {
+        StockSnapshot stockSnapshot = null;   
+        int i = 0;
+        i = Integer.parseInt(index);
+        i--;
+        if(i<0){
+            i=0;
+        }
+         for (; i<Integer.parseInt(number) && i< list.size(); i++) {
             if(i>10)
                     break;
             stockSnapshot = (StockSnapshot) ServerContext.getSnapshotMap().get(list.get(i).getKey().toString());

@@ -49,7 +49,10 @@ public class ReadDBFSHThread extends Thread {
     }
 
     private void doReadDBF() {
-        String path = Config.DBF_PATH + "/SHOW2003.DBF";
+        String path = Config.DBF_PATH 
+                    + Config.FILE_SPLITE 
+                    + Config.DBF_SH;
+        System.out.println(path);
         InputStream is = null;
         ByteBuffer buffer = null;
         byte[] temp = null;
