@@ -6,9 +6,11 @@ package com.otod.server.dao;
 
 import com.otod.bean.ServerContext;
 import com.otod.bean.quote.exchange.ExchangeData;
+import com.otod.bean.quote.finance.FinanceData;
 import com.otod.bean.quote.master.MasterData;
 import com.otod.bean.quote.tradetime.PeriodTime;
 import com.otod.bean.quote.tradetime.TimeNode;
+import com.otod.dao.FinanceDao;
 import com.otod.db.Connector;
 import com.otod.db.MysqlConnector;
 
@@ -41,10 +43,11 @@ public class ExchangeOpenDao {
             doMinuteClear();
             doSnapshotClear();
             doAuthorize();
+            
             exchangeData.isTrade = true;
             exchangeData.tradeDate = date;
             MasterData.updateMasterDataByExchange(exchangeData);
-
+            doFinanceUpdate();//更新财务信息
             exchangeData.signalType = ExchangeData.OpenSignal;
         } finally {
             connector.close();
@@ -92,5 +95,17 @@ public class ExchangeOpenDao {
                 ServerContext.getSnapshotMap().remove(masterData.symbol);
             }
         }
+    }
+    
+    private void doFinanceUpdate(){
+        FinanceDao financeDao = new FinanceDao();
+        financeDao.setConnector(connector);
+        Map<String, FinanceData> financeMap = ServerContext.getFinanceMap();
+        for (Map.Entry<String, MasterData> entryset : ServerContext.getMasterMap().entrySet()) {
+            String symbol = (String) entryset.getKey();
+            FinanceData financeData = financeDao.getBySymbol(symbol);
+            financeMap.put(symbol, financeData);
+        }
+        System.out.println("更新财务数据");
     }
 }

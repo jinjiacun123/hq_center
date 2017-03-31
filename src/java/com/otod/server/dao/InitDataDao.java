@@ -66,8 +66,7 @@ public class InitDataDao {
         financeDao.setConnector(connector);
         Map<String, FinanceData> financeMap = ServerContext.getFinanceMap();
         for (Map.Entry<String, MasterData> entryset : ServerContext.getMasterMap().entrySet()) {
-            String symbol = (String) entryset.getKey();
-            System.out.println(symbol);
+            String symbol = (String) entryset.getKey();            
             FinanceData financeData = financeDao.getBySymbol(symbol);
             financeMap.put(symbol, financeData);
         }
