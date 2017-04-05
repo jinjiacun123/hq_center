@@ -51,10 +51,11 @@ public class LSortServlet extends HttpServlet{
         String symbol = request.getParameter("symbol");
         String number = request.getParameter("number");
         String from = request.getParameter("from");
-        String column = request.getParameter("column");//1-成交额,2-涨跌幅,3-振幅,4-换手率,5-市盈率
+        String column = request.getParameter("column");//SORT_M-成交额,SORT_RAISE-涨跌幅,SORT_AMPLITUDE-振幅,SORT_TURNOVERRATE-换手率,SORT_EARMING-市盈率
         String index  = request.getParameter("index");
         String way    = request.getParameter("way");//0-倒序,1-正序
         String callback = request.getParameter("callback");
+        String market   = request.getParameter("market");//0-深圳a股票,1-深圳b股票,2-上海a股票,3-上海b股票
         
         /*
         if (symbol == null || symbol.equals("")) {
@@ -70,25 +71,44 @@ public class LSortServlet extends HttpServlet{
             fq = "0";
         }
     */
+        String[] Markets = null;
+        
         if(column == null || column.equals("")){
-            column = "1";
+            column = "SORT_M";
         }
+        
         if(index == null || index.equals("")){
             index = "1";
         }
         if(number == null || number.equals("") ){
             number = "10";
         }
-
-        int iColumn = Integer.parseInt(column);
+        if(market == null || market.equals("") ){
+            market = "SH_A";
+        }else{
+            Markets = market.split(",");
+        }
+        
+        
         int date = 0;        
         int decimal = 2;
         Map<String,Double> myMap = null;
         List<Map.Entry<String, Double>> list = null;
+        
         //1-成交额,2-涨跌幅,3-振幅,4-换手率,5-市盈率
+        if(Markets.length>0){
+            myMap = ServerContext.getMarketList().get(Markets[0]+"_"+column);
+            for(int i=1; i < Markets.length; i++){
+                myMap.putAll(ServerContext.getMarketList().get(Markets[i]+"_"+column));
+            }
+        }
+        else{
+            myMap  = ServerContext.getMarketList().get(market+"_"+column);
+        }
+        /*
         switch(iColumn){
             case 1:{
-                myMap  = ServerContext.getListSortMMap();
+                myMap  = ServerContext.getMarketList().get(iMarket).get(iColumn-1);
             }break;
             case 2:{
                 myMap  = ServerContext.getListSortRaiseMap();
@@ -103,6 +123,7 @@ public class LSortServlet extends HttpServlet{
                 myMap  = ServerContext.getListSortEarmingMap();
             }break;
         }
+        */
         if(myMap != null)
             list = Help.sort_by_double(myMap);
         else
@@ -113,15 +134,15 @@ public class LSortServlet extends HttpServlet{
         StringBuffer valueBuffer = new StringBuffer();
 
         StockSnapshot stockSnapshot = null;   
-        int i = 0;
+        int i = 0, j = 0;
         i = Integer.parseInt(index);
         i--;
         if(i<0){
             i=0;
         }
-         for (; i<Integer.parseInt(number) && i< list.size(); i++) {
-            if(i>10)
-                    break;
+         for (; j<Integer.parseInt(number) && i< list.size(); i++,j++) {
+            //if(i>10)
+             //       break;
             stockSnapshot = (StockSnapshot) ServerContext.getSnapshotMap().get(list.get(i).getKey().toString());
             if (stockSnapshot != null) {
                 JSONObject json = new JSONObject();

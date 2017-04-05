@@ -16,6 +16,8 @@ import com.otod.bean.quote.snapshot.SnapshotQueue;
 import com.otod.bean.quote.tick.TickQueue;
 import com.otod.bean.quote.tradetime.PeriodTime;
 import com.otod.bean.quote.tradetime.TimeNode;
+import com.otod.util.Config;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -56,12 +58,45 @@ public class ServerContext {
     private static LinkedBlockingQueue<Snapshot> quoteToDBQueue = new LinkedBlockingQueue<Snapshot>();
     private static boolean authorizeFlag = true;
     private static ConcurrentHashMap<String, List<StockDividend>> stockDividendMap = new ConcurrentHashMap<String, List<StockDividend>>();
+    //market
+    private static Map<String,Map<String, Double>> marketList = new HashMap<String,Map<String, Double>>(){{
+        String[] marketList = Config.MARKET_SZ.split(",");
+        if(marketList.length > 0){
+            //深圳交易所
+            for(int i=0; i< marketList.length; i++){
+                String[] marketName = marketList[i].split("-");
+                if(marketName.length > 0)
+                    put("SZ_" + marketName[0]+"_SORT_M", new HashMap<String, Double>());
+                    put("SZ_" + marketName[0]+"_SORT_RAISE", new HashMap<String, Double>());
+                    put("SZ_" + marketName[0]+"_SORT_AMPLITUDE", new HashMap<String, Double>());
+                    put("SZ_" + marketName[0]+"_SORT_TURNOVERRATE", new HashMap<String, Double>());
+                    put("SZ_" + marketName[0]+"_SORT_EARMING", new HashMap<String, Double>());
+            }
+        }
+        
+        marketList = Config.MARKET_SH.split(",");
+        if(marketList.length > 0){
+            //上海交易所
+            for(int i=0; i< marketList.length; i++){
+                String[] marketName = marketList[i].split("-");
+                if(marketName.length > 0)
+                    put("SH_" + marketName[0]+"_SORT_M", new HashMap<String, Double>());
+                    put("SH_" + marketName[0]+"_SORT_RAISE", new HashMap<String, Double>());
+                    put("SH_" + marketName[0]+"_SORT_AMPLITUDE", new HashMap<String, Double>());
+                    put("SH_" + marketName[0]+"_SORT_TURNOVERRATE", new HashMap<String, Double>());
+                    put("SH_" + marketName[0]+"_SORT_EARMING", new HashMap<String, Double>());
+            }
+        }        
+        
+        }};
     //new add
+    /*
     private static Map<String, Double> listSortMMap = new HashMap<String, Double>();//成交额
     private static Map<String, Double> listSortRaiseMap = new HashMap<String, Double>();//涨跌幅
     private static Map<String, Double> listSortAmplitudeMap = new HashMap<String, Double>();//振幅
     private static Map<String, Double> listSortTurnoverRateMap = new HashMap<String, Double>();//换手率
     private static Map<String, Double> listSortEarmingMap = new HashMap<String, Double>();//市盈率
+    */
     //finance
     private static Map<String, FinanceData> financeMap  = new HashMap<String, FinanceData>();
 
@@ -285,6 +320,14 @@ public class ServerContext {
         ServerContext.stockDividendMap = stockDividendMap;
     }
     
+    public static Map<String,Map<String, Double>> getMarketList(){
+        return marketList;
+    }
+    
+    public static void setMarketList(Map<String,Map<String, Double>> marketList){
+        ServerContext.marketList = marketList;
+    }
+    /*
     public static Map<String, Double> getListSortMMap(){
         return listSortMMap;
     }
@@ -324,6 +367,7 @@ public class ServerContext {
     public static void setListSortEarmingMap(Map<String, Double> listSortEarmingMap){
         ServerContext.listSortEarmingMap = listSortEarmingMap;
     }
+*/
     
     public static Map<String, FinanceData> getFinanceMap(){
         return financeMap;

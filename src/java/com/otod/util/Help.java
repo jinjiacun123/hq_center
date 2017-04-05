@@ -4,11 +4,14 @@
  * and open the template in the editor.
  */
 package com.otod.util;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 /**
  *
  * @author admin
@@ -46,5 +49,63 @@ public class Help {
 		}  
 	    });
 	return arrayList;
+    }
+    
+    public static  Map<String,Double> Obj2Map(Object obj) throws Exception{
+            Map<String,Double> map=new HashMap<String, Double>();
+            Field[] fields = obj.getClass().getDeclaredFields();
+            for(Field field:fields){
+                field.setAccessible(true);
+                map.put(field.getName(), field.getDouble(obj));
+            }
+            return map;
+        }
+    
+    public Object map2Obj(Map<String,Object> map,Class<?> clz) throws Exception{
+            Object obj = clz.newInstance();
+            Field[] declaredFields = obj.getClass().getDeclaredFields();
+            for(Field field:declaredFields){
+                int mod = field.getModifiers(); 
+                if(Modifier.isStatic(mod) || Modifier.isFinal(mod)){
+                    continue;
+                }
+                field.setAccessible(true);
+                field.set(obj, map.get(field.getName()));
+            }
+            return obj;
+        }
+    //type:0-上海，1-深圳
+    //返回:0-深圳a股票,1-深圳b股票,2-上海a股票,3-上海b股票
+    public static String findMarketByCode(int type, String code){
+        String marketConfig = "";
+        String marketName = "";
+        String[] marketList= null;
+        String marketPrefix = "";
+        switch(type){
+            case Config.TYPE_SH:{
+                marketConfig = Config.MARKET_SH;                
+                marketPrefix = "SH";
+            }break;
+            case Config.TYPE_SZ:{
+                marketConfig = Config.MARKET_SZ;
+                marketPrefix = "SZ";
+            }break;
+        }
+        marketList = marketConfig.split(",");
+        if (marketList.length > 0) {
+            for (int marketIndex = 0; marketIndex < marketList.length; marketIndex++) {
+                String[] marketNameAndRule = marketList[marketIndex].split("-");
+                if (marketNameAndRule.length > 1) {
+                    marketName = marketNameAndRule[0];
+                    for (int ruleIndex = 1; ruleIndex < marketNameAndRule.length; ruleIndex++) {
+                        if (code.startsWith(marketPrefix + marketNameAndRule[ruleIndex])) {
+                            return marketPrefix + "_" + marketName;
+                        }
+                    }
+                }
+
+            }
+        }
+        return "";
     }
 }
