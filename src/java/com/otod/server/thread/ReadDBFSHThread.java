@@ -134,8 +134,8 @@ public class ReadDBFSHThread extends Thread {
                     listSortMMap            = marketList.get(marketName+"_SORT_M");//成交额
                     listSortRaiseMap        = marketList.get(marketName+"_SORT_RAISE");//涨跌幅
                     listSortAmplitudeMap    = marketList.get(marketName+"_SORT_AMPLITUDE");//振幅
-                    //listSortTurnoverRateMap = marketList.get(marketName+"_SORT_SORT_TURNOVERRATE");//换手率
-                    //listSortEarmingMap      = marketList.get(marketName+"_SORT_SORT_EARMING");//市盈率
+                    listSortTurnoverRateMap = marketList.get(marketName+"_SORT_SORT_TURNOVERRATE");//换手率
+                    listSortEarmingMap      = marketList.get(marketName+"_SORT_SORT_EARMING");//市盈率
                 }
                 
                 StockSnapshot stockSnapshot = new StockSnapshot();
@@ -161,21 +161,17 @@ public class ReadDBFSHThread extends Thread {
                         volume = Double.parseDouble(String.valueOf(rowValues[10]).trim());
                         listSortRaiseMap.put(symbol, (lastPrice-pClose)/lastPrice);
                         listSortAmplitudeMap.put(symbol, (hightPrice - lowPrice)/lowPrice);
-                       /* financeData = (FinanceData)financeMap.get(symbol);
+                        financeData = (FinanceData)financeMap.get(symbol);
                         if(financeData != null && financeData.getGxrq() != 0){
                             //listSortTurnoverRateMap.put(symbol, volume/5);
                             //System.out.println(financeData.getLtag());
                             listSortTurnoverRateMap.put(symbol, volume/financeData.getLtag());
                             listSortEarmingMap.put(symbol, stockSnapshot.getLastPrice()/financeData.getShly());
                         }
-                        */
                     }
                     catch(Exception ex){
                         //System.out.println("err:"+String.valueOf(rowValues[4]).trim());
                     }
-                    /*
-                   
-                    */
                 }
                 BidAsk bid1 = new BidAsk();
 //                System.out.println(String.valueOf(rowValues[14]).trim());

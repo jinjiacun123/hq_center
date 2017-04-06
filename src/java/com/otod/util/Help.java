@@ -96,7 +96,7 @@ public class Help {
             for (int marketIndex = 0; marketIndex < marketList.length; marketIndex++) {
                 String[] marketNameAndRule = marketList[marketIndex].split("-");
                 if (marketNameAndRule.length > 1) {
-                    marketName = marketNameAndRule[0];
+                    marketName = marketNameAndRule[0].trim();
                     for (int ruleIndex = 1; ruleIndex < marketNameAndRule.length; ruleIndex++) {
                         if (code.startsWith(marketPrefix + marketNameAndRule[ruleIndex])) {
                             return marketPrefix + "_" + marketName;
@@ -108,4 +108,27 @@ public class Help {
         }
         return "";
     }
+    
+    public static boolean checkHalf(String str) {     
+          byte[] Char;     
+          for(int i = 0; i < str.length(); i++) {     
+              try{     
+                  Char = (new   Character(str.charAt(i)).toString()).getBytes("MS932");     
+              }catch(Exception   e)   {     
+                  return   false;     
+              }     
+              if(Char.length == 1)   {     
+                  return   true;     
+              }     
+          }     
+            return   false;     
+      }  
+    
+    public static String byteToBit(byte b) {  
+        return ""  
+                + (byte) ((b >> 7) & 0x1) + (byte) ((b >> 6) & 0x1)  
+                + (byte) ((b >> 5) & 0x1) + (byte) ((b >> 4) & 0x1)  
+                + (byte) ((b >> 3) & 0x1) + (byte) ((b >> 2) & 0x1)  
+                + (byte) ((b >> 1) & 0x1) + (byte) ((b >> 0) & 0x1);  
+    }  
 }

@@ -97,9 +97,9 @@ public class ReadDBFSZThread extends Thread {
             int time =  Integer.parseInt(DateUtil.formatDate(null, "HHmmss"));
             double pClose, lastPrice, lowPrice, hightPrice,volume;
             double ltag;
-            /*
-            List<Map> marketList = ServerContext.getMarketList();
-            int marketIndex = 0;
+            
+            Map<String,Map<String, Double>> marketList = ServerContext.getMarketList();
+            String marketName = "";
             
             Map<String, Double> listSortMMap            = null;//成交额
             Map<String, Double> listSortRaiseMap        = null;//涨跌幅
@@ -108,31 +108,58 @@ public class ReadDBFSZThread extends Thread {
             Map<String, Double> listSortEarmingMap      = null;//市盈率
             Map<String, FinanceData> financeMap  = ServerContext.getFinanceMap();
             FinanceData financeData = null;
-            */
             while ((rowValues = reader.nextRecord()) != null) {
                 if (rowValues[0] == null) {
                     continue;
                 }
                 String symbol = String.valueOf(rowValues[0]).trim();
+                /*
+                System.out.println(symbol);
+                byte[] b = symbol.getBytes();
+                System.out.print(Help.byteToBit(b[0])); System.out.print(" ");
+                System.out.print(Help.byteToBit(b[1])); System.out.print(" ");
+                System.out.print(Help.byteToBit(b[2])); System.out.print(" ");
+                System.out.print(Help.byteToBit(b[3])); System.out.print(" ");
+                System.out.print(Help.byteToBit(b[4])); System.out.print(" ");
+                System.out.print(Help.byteToBit(b[5])); System.out.print(" ");
+                */
+                /*
+                System.out.println(" ");                
+                System.out.print(symbol.length());System.out.println(" ");
+                System.out.print(symbol.getBytes().length);System.out.println(" ");
+                if(Help.checkHalf(symbol)){
+                    System.out.print("true");
+                    System.out.println("");
+                }
+*/
+                /*
+                if(i> 100){
+                    System.out.println(i);
+                }
+                if(symbol.equals("120001")){
+                    System.out.println(symbol);
+                }
+*/
                 if (symbol.equals("") || symbol.length() < 6) {
                     continue;
                 }
-                symbol = "SZ" + symbol;
-                //marketIndex = Help.findMarketByCode(Config.TYPE_SZ, symbol);
-                
-                 //获取市场对应排序
-                //listSortMMap            = Help.Obj2Map(marketList.get(0));//成交额
+                symbol = "SZ" + symbol;                
+                marketName = Help.findMarketByCode(Config.TYPE_SZ, symbol);
+               
+                if(marketName != ""){
+                     //获取市场对应排序
+                    listSortMMap            = marketList.get(marketName+"_SORT_M");//成交额
+                    listSortRaiseMap        = marketList.get(marketName+"_SORT_RAISE");//涨跌幅
+                    listSortAmplitudeMap    = marketList.get(marketName+"_SORT_AMPLITUDE");//振幅
+                    listSortTurnoverRateMap = marketList.get(marketName+"_SORT_SORT_TURNOVERRATE");//换手率
+                    listSortEarmingMap      = marketList.get(marketName+"_SORT_SORT_EARMING");//市盈率
+                }
                 /*
-                listSortRaiseMap        = Help.Obj2Map(marketList.get(marketIndex).get(1));//涨跌幅
-                listSortAmplitudeMap    = Help.Obj2Map(marketList.get(marketIndex).get(2));//振幅
-                listSortTurnoverRateMap = Help.Obj2Map(marketList.get(marketIndex).get(3));//换手率
-                listSortEarmingMap      = Help.Obj2Map(marketList.get(marketIndex).get(4));//市盈率
-*/
-
                 MasterData masterData = ServerContext.getMasterMap().get(symbol);
                 if (masterData == null) {
                     continue;
                 }
+*/
                 StockSnapshot stockSnapshot = new StockSnapshot();
                 stockSnapshot.setSymbol(symbol);
                 stockSnapshot.setCnName(String.valueOf(rowValues[1]).trim());
@@ -145,24 +172,29 @@ public class ReadDBFSZThread extends Thread {
                 stockSnapshot.setpClose(Double.parseDouble(String.valueOf(rowValues[2]).trim()));
                 stockSnapshot.setVolume(getVolume(String.valueOf(rowValues[5]).trim()));
                 stockSnapshot.setTurnover(Double.parseDouble(String.valueOf(rowValues[6]).trim()));
-                 //new add
-                 /*
-                listSortMMap.put(symbol, Double.parseDouble(String.valueOf(rowValues[4]).trim()));
-                pClose = Double.parseDouble(String.valueOf(rowValues[2]).trim());
-                lastPrice = Double.parseDouble(String.valueOf(rowValues[7]).trim());
-                lowPrice = Double.parseDouble(String.valueOf(rowValues[6]).trim());
-                hightPrice = Double.parseDouble(String.valueOf(rowValues[5]).trim());
-                volume = Double.parseDouble(String.valueOf(rowValues[10]).trim());
-                listSortRaiseMap.put(symbol, (lastPrice-pClose)/lastPrice);
-                listSortAmplitudeMap.put(symbol, (hightPrice - lowPrice)/lowPrice);
-                financeData = (FinanceData)financeMap.get(symbol);
-                if(financeData != null && financeData.getGxrq() != 0){
-                    //listSortTurnoverRateMap.put(symbol, volume/5);
-                    //System.out.println(financeData.getLtag());
-                    listSortTurnoverRateMap.put(symbol, volume/financeData.getLtag());
-                    listSortEarmingMap.put(symbol, stockSnapshot.getLastPrice()/financeData.getShly());
+                //new add
+                if(!marketName.equals("")){
+                    try{
+                        listSortMMap.put(symbol, Double.parseDouble(String.valueOf(rowValues[4]).trim()));                        
+                        pClose = Double.parseDouble(String.valueOf(rowValues[2]).trim());
+                        lastPrice = Double.parseDouble(String.valueOf(rowValues[7]).trim());
+                        lowPrice = Double.parseDouble(String.valueOf(rowValues[6]).trim());
+                        hightPrice = Double.parseDouble(String.valueOf(rowValues[5]).trim());
+                        volume = Double.parseDouble(String.valueOf(rowValues[10]).trim());
+                        listSortRaiseMap.put(symbol, (lastPrice-pClose)/lastPrice);
+                        listSortAmplitudeMap.put(symbol, (hightPrice - lowPrice)/lowPrice);
+                        financeData = (FinanceData)financeMap.get(symbol);
+                        if(financeData != null && financeData.getGxrq() != 0){
+                            //listSortTurnoverRateMap.put(symbol, volume/5);
+                            //System.out.println(financeData.getLtag());
+                            listSortTurnoverRateMap.put(symbol, volume/financeData.getLtag());
+                            listSortEarmingMap.put(symbol, stockSnapshot.getLastPrice()/financeData.getShly());
+                        }
+                    }
+                    catch(Exception ex){
+                        //System.out.println("err:"+String.valueOf(rowValues[4]).trim());
+                    }
                 }
-*/
                 BidAsk ask1 = new BidAsk();
                 ask1.setPrice(Double.parseDouble(String.valueOf(rowValues[15]).trim()));
                 ask1.setVolume(getVolume(String.valueOf(rowValues[16]).trim()));
@@ -208,10 +240,12 @@ public class ReadDBFSZThread extends Thread {
                 StockSnapshot hSnapshot = (StockSnapshot) ServerContext.getTempSnapshotMap().get(symbol);
                 if (hSnapshot == null) {
                     ServerContext.getRtSnapshotQueue().add(stockSnapshot.clone());
-                    //ServerContext.getTempSnapshotMap().put(stockSnapshot.symbol, stockSnapshot);
+                    ServerContext.getSnapshotMap().put(stockSnapshot.symbol, stockSnapshot);
+                    ServerContext.getTempSnapshotMap().put(stockSnapshot.symbol, stockSnapshot);
                 } else {
                     if (!hSnapshot.equalsTemp(stockSnapshot)) {
-                        //hSnapshot.updateTempSnapshot(stockSnapshot);
+                        hSnapshot.updateTempSnapshot(stockSnapshot);
+                        hSnapshot.updateSnapshot(hSnapshot);
                         ServerContext.getRtSnapshotQueue().add(stockSnapshot);
                     }
                 }

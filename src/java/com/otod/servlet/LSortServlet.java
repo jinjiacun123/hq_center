@@ -96,10 +96,12 @@ public class LSortServlet extends HttpServlet{
         List<Map.Entry<String, Double>> list = null;
         
         //1-成交额,2-涨跌幅,3-振幅,4-换手率,5-市盈率
-        if(Markets.length>0){
-            myMap = ServerContext.getMarketList().get(Markets[0]+"_"+column);
-            for(int i=1; i < Markets.length; i++){
-                myMap.putAll(ServerContext.getMarketList().get(Markets[i]+"_"+column));
+        if(Markets != null){
+            if(Markets.length>0){
+                myMap = ServerContext.getMarketList().get(Markets[0]+"_"+column);
+                for(int i=1; i < Markets.length; i++){
+                    myMap.putAll(ServerContext.getMarketList().get(Markets[i]+"_"+column));
+                }
             }
         }
         else{
