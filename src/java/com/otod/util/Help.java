@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package com.otod.util;
+import com.otod.bean.ServerContext;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 /**
  *
  * @author admin
@@ -45,11 +47,31 @@ public class Help {
 			    : (map2.getValue() - map1.getValue() > 0) ? 1  
                             : -1);  
                             */
-                    return new Double(map1.getValue()).compareTo(map2.getValue());
+                        return new Double(map1.getValue()).compareTo(map2.getValue());
 		}  
 	    });
 	return arrayList;
     }
+    
+     public static List<Map.Entry<String, Double>> sort_by_double_ex(Map<String,Double> hashMap){	
+	//转换  
+	ArrayList<Map.Entry<String, Double>> arrayList = new ArrayList<Map.Entry<String,Double>>(hashMap.entrySet());  
+         System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
+	//排序  
+	Collections.sort(arrayList, new Comparator<Map.Entry<String, Double>>(){  
+		public int compare(Map.Entry<String, Double> map1,  
+				   Map.Entry<String,Double> map2) { 
+                    /*
+		    return ((map2.getValue() - map1.getValue() == 0) ? 0  
+			    : (map2.getValue() - map1.getValue() > 0) ? 1  
+                            : -1);  
+                            */
+                        return new Double(map2.getValue()).compareTo(map1.getValue());
+		}  
+	    });
+	return arrayList;
+    }
+    
     
     public static  Map<String,Double> Obj2Map(Object obj) throws Exception{
             Map<String,Double> map=new HashMap<String, Double>();
@@ -107,6 +129,27 @@ public class Help {
             }
         }
         return "";
+    }
+    
+    /*
+    *查找当日涨跌停股票
+    *
+    *涨停:股票达到10%涨幅,新股40%涨幅
+    *
+    *跌停:股票下跌10%
+    */
+    public static Boolean checkIsDayRaiseFallStop(String code, Double rate){
+        ConcurrentHashMap<String,Double> raiseStopMap = ServerContext.getRaiseStopMap();
+        ConcurrentHashMap<String, Double> fallStopMap = ServerContext.getFallStopMap();
+        if(rate > 0 && rate>=0.09){
+            raiseStopMap.put(code, rate);
+            return true;
+        }else if(rate <0 && rate<=-0.09){
+            fallStopMap.put(code, rate);
+            return true;
+        }
+        
+        return false;
     }
     
     public static boolean checkHalf(String str) {     

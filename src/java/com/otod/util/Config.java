@@ -50,6 +50,7 @@ public class Config {
      */
     public static enum SORT_LIST{
         SORT_M,           //成交额
+        SORT_UPDOWN,      //
         SORT_RAISE,       //涨跌幅
         SORT_AMPLITUDE,   //振幅
         SORT_TURNOVERRATE,//换手率

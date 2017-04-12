@@ -103,6 +103,7 @@ public class ReadDBFSZThread extends Thread {
             
             Map<String, Double> listSortMMap            = null;//成交额
             Map<String, Double> listSortRaiseMap        = null;//涨跌幅
+            Map<String, Double> listSortUpdownMap       = null;//涨跌额
             Map<String, Double> listSortAmplitudeMap    = null;//振幅
             Map<String, Double> listSortTurnoverRateMap = null;//换手率
             Map<String, Double> listSortEarmingMap      = null;//市盈率
@@ -149,6 +150,7 @@ public class ReadDBFSZThread extends Thread {
                 if(marketName != ""){
                      //获取市场对应排序
                     listSortMMap            = marketList.get(marketName+"_SORT_M");//成交额
+                    listSortUpdownMap       = marketList.get(marketName+"_SORT_UPDOWN");//涨跌额
                     listSortRaiseMap        = marketList.get(marketName+"_SORT_RAISE");//涨跌幅
                     listSortAmplitudeMap    = marketList.get(marketName+"_SORT_AMPLITUDE");//振幅
                     listSortTurnoverRateMap = marketList.get(marketName+"_SORT_SORT_TURNOVERRATE");//换手率
@@ -173,7 +175,7 @@ public class ReadDBFSZThread extends Thread {
                 stockSnapshot.setVolume(getVolume(String.valueOf(rowValues[5]).trim()));
                 stockSnapshot.setTurnover(Double.parseDouble(String.valueOf(rowValues[6]).trim()));
                 //new add
-                if(!marketName.equals("")){
+                if((!marketName.equals("")&&(!symbol.startsWith("SZ000000")))){
                     try{
                         listSortMMap.put(symbol, Double.parseDouble(String.valueOf(rowValues[4]).trim()));                        
                         pClose = Double.parseDouble(String.valueOf(rowValues[2]).trim());
@@ -182,12 +184,16 @@ public class ReadDBFSZThread extends Thread {
                         hightPrice = Double.parseDouble(String.valueOf(rowValues[5]).trim());
                         volume = Double.parseDouble(String.valueOf(rowValues[10]).trim());
                         listSortRaiseMap.put(symbol, (lastPrice-pClose)/lastPrice);
+                        listSortUpdownMap.put(symbol, lastPrice-pClose);
+                        Help.checkIsDayRaiseFallStop(symbol, (lastPrice-pClose)/lastPrice);
                         listSortAmplitudeMap.put(symbol, (hightPrice - lowPrice)/lowPrice);
                         financeData = (FinanceData)financeMap.get(symbol);
                         if(financeData != null && financeData.getGxrq() != 0){
                             //listSortTurnoverRateMap.put(symbol, volume/5);
                             //System.out.println(financeData.getLtag());
+                            stockSnapshot.setTurnoverRate(volume/financeData.getLtag());
                             listSortTurnoverRateMap.put(symbol, volume/financeData.getLtag());
+                            stockSnapshot.setEarming(stockSnapshot.getLastPrice()/financeData.getShly());
                             listSortEarmingMap.put(symbol, stockSnapshot.getLastPrice()/financeData.getShly());
                         }
                     }

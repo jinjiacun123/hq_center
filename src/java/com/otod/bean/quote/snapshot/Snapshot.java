@@ -40,6 +40,9 @@ public class Snapshot {
     public double ask1Price;//卖一价
     public int ask1Volume;//卖一量
     
+    public double turnoverRate;//换手率
+    public double earming;//市营率
+    
     private int dataType = ApplicationConstant.MEMORY_DATA;//数据类型，分为内存数据和数据库数据，默认为内存数据
     private int period;
     private int dbOperType;//数据库处理操作，有插入和更新两种
@@ -228,6 +231,23 @@ public class Snapshot {
         this.ask1Volume = ask1Volume;
     }
 
+    public double getTurnoverRate(){
+        return turnoverRate;
+    }
+    
+    public void setTurnoverRate(double turnoverRate){
+        this.turnoverRate = turnoverRate;
+    }
+    
+    public double getEarming(){
+        return earming;
+    }
+    
+    public void setEarming(double earming){
+        this.earming = earming;
+    }
+    
+    
     public int getDecimal() {
         return decimal;
     }

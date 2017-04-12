@@ -109,6 +109,7 @@ public class ReadDBFSHThread extends Thread {
             
             Map<String, Double> listSortMMap            = null;//成交额
             Map<String, Double> listSortRaiseMap        = null;//涨跌幅
+            Map<String, Double> listSortUpdownMap        = null;//涨跌幅
             Map<String, Double> listSortAmplitudeMap    = null;//振幅
             Map<String, Double> listSortTurnoverRateMap = null;//换手率
             Map<String, Double> listSortEarmingMap      = null;//市盈率
@@ -132,6 +133,7 @@ public class ReadDBFSHThread extends Thread {
                 if(marketName != ""){
                      //获取市场对应排序
                     listSortMMap            = marketList.get(marketName+"_SORT_M");//成交额
+                    listSortUpdownMap       = marketList.get(marketName+"_SORT_UPDOWN");//涨跌额
                     listSortRaiseMap        = marketList.get(marketName+"_SORT_RAISE");//涨跌幅
                     listSortAmplitudeMap    = marketList.get(marketName+"_SORT_AMPLITUDE");//振幅
                     listSortTurnoverRateMap = marketList.get(marketName+"_SORT_SORT_TURNOVERRATE");//换手率
@@ -159,13 +161,17 @@ public class ReadDBFSHThread extends Thread {
                         lowPrice = Double.parseDouble(String.valueOf(rowValues[6]).trim());
                         hightPrice = Double.parseDouble(String.valueOf(rowValues[5]).trim());
                         volume = Double.parseDouble(String.valueOf(rowValues[10]).trim());
+                        listSortUpdownMap.put(symbol, lastPrice-pClose);
                         listSortRaiseMap.put(symbol, (lastPrice-pClose)/lastPrice);
+                        Help.checkIsDayRaiseFallStop(symbol, (lastPrice-pClose)/lastPrice);
                         listSortAmplitudeMap.put(symbol, (hightPrice - lowPrice)/lowPrice);
                         financeData = (FinanceData)financeMap.get(symbol);
                         if(financeData != null && financeData.getGxrq() != 0){
                             //listSortTurnoverRateMap.put(symbol, volume/5);
                             //System.out.println(financeData.getLtag());
+                            stockSnapshot.setTurnoverRate(volume/financeData.getLtag());
                             listSortTurnoverRateMap.put(symbol, volume/financeData.getLtag());
+                            stockSnapshot.setEarming(stockSnapshot.getLastPrice()/financeData.getShly());
                             listSortEarmingMap.put(symbol, stockSnapshot.getLastPrice()/financeData.getShly());
                         }
                     }

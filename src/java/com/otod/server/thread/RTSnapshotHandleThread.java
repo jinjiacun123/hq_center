@@ -20,6 +20,7 @@ import com.otod.bean.quote.tick.TickQueue;
 import com.otod.bean.quote.tradetime.PeriodTime;
 import com.otod.util.ApplicationConstant;
 import com.otod.util.DateUtil;
+import com.otod.util.Help;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -37,9 +38,9 @@ public class RTSnapshotHandleThread extends Thread {
         ExchangeData exchangeData = null;
         while (true) {
             try {
-                snapshot = ServerContext.getRtSnapshotQueue().take();
+                snapshot = ServerContext.getRtSnapshotQueue().take();                
                 masterData = ServerContext.getMasterMap().get(snapshot.getSymbol());
-
+  
                 if (masterData == null) {
                     continue;
                 }
