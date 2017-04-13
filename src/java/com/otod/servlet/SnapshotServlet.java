@@ -85,6 +85,8 @@ public class SnapshotServlet extends HttpServlet {
                 json.put("pclose", stockSnapshot.pClose);
                 json.put("volume", StringUtil.formatNumber(stockSnapshot.getVolume(),0));
                 json.put("turnover", StringUtil.formatNumber(stockSnapshot.getTurnover(),0));
+                json.put("turnrate", StringUtil.formatNumber(stockSnapshot.getTurnoverRate(), 3));
+                json.put("earning", StringUtil.formatNumber(stockSnapshot.getEarming(), 3));
                 json.put("time", stockSnapshot.getQuoteTime());
                 array.add(json);
             }

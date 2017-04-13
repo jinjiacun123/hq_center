@@ -58,8 +58,8 @@ public class ServerContext {
     private static LinkedBlockingQueue<Snapshot> quoteToDBQueue = new LinkedBlockingQueue<Snapshot>();
     private static boolean authorizeFlag = true;
     private static ConcurrentHashMap<String, List<StockDividend>> stockDividendMap = new ConcurrentHashMap<String, List<StockDividend>>();
-    private static ConcurrentHashMap<String, Double> raiseStopMap = new ConcurrentHashMap<String, Double>();//涨停
-    private static ConcurrentHashMap<String, Double> fallStopMap  = new ConcurrentHashMap<String, Double>();//跌停
+    private static ConcurrentHashMap<String, String> raiseStopMap = new ConcurrentHashMap<String, String>();//涨停
+    private static ConcurrentHashMap<String, String> fallStopMap  = new ConcurrentHashMap<String, String>();//跌停
     //market
     private static Map<String,Map<String, Double>> marketList = new HashMap<String,Map<String, Double>>(){{
         String[] marketList = Config.MARKET_SZ.split(",");
@@ -67,13 +67,14 @@ public class ServerContext {
             //ÉîÛÚ½»Ò×Ëù
             for(int i=0; i< marketList.length; i++){
                 String[] marketName = marketList[i].split("-");
-                if(marketName.length > 0)
-                    put("SZ_" + marketName[0]+"_SORT_M", new HashMap<String, Double>());
-                    put("SZ_" + marketName[0]+"_SORT_UPDOWN", new HashMap<String, Double>());
-                    put("SZ_" + marketName[0]+"_SORT_RAISE", new HashMap<String, Double>());
-                    put("SZ_" + marketName[0]+"_SORT_AMPLITUDE", new HashMap<String, Double>());
-                    put("SZ_" + marketName[0]+"_SORT_TURNOVERRATE", new HashMap<String, Double>());
-                    put("SZ_" + marketName[0]+"_SORT_EARMING", new HashMap<String, Double>());
+                if(marketName.length > 0){
+                        put("SZ_" + marketName[0]+"_SORT_M", new HashMap<String, Double>());
+                        put("SZ_" + marketName[0]+"_SORT_UPDOWN", new HashMap<String, Double>());
+                        put("SZ_" + marketName[0]+"_SORT_RAISE", new HashMap<String, Double>());
+                        put("SZ_" + marketName[0]+"_SORT_AMPLITUDE", new HashMap<String, Double>());
+                        put("SZ_" + marketName[0]+"_SORT_TURNOVERRATE", new HashMap<String, Double>());
+                        put("SZ_" + marketName[0]+"_SORT_EARMING", new HashMap<String, Double>());
+                }
             }
         }
         
@@ -83,12 +84,16 @@ public class ServerContext {
             for(int i=0; i< marketList.length; i++){
                 String[] marketName = marketList[i].split("-");
                 if(marketName.length > 0)
-                    put("SH_" + marketName[0]+"_SORT_M", new HashMap<String, Double>());
-                    put("SH_" + marketName[0]+"_SORT_UPDOWN", new HashMap<String, Double>());
-                    put("SH_" + marketName[0]+"_SORT_RAISE", new HashMap<String, Double>());
-                    put("SH_" + marketName[0]+"_SORT_AMPLITUDE", new HashMap<String, Double>());
-                    put("SH_" + marketName[0]+"_SORT_TURNOVERRATE", new HashMap<String, Double>());
-                    put("SH_" + marketName[0]+"_SORT_EARMING", new HashMap<String, Double>());
+                {
+                    for(int j=0; j < marketName.length; j++){
+                        put("SH_" + marketName[j]+"_SORT_M", new HashMap<String, Double>());
+                        put("SH_" + marketName[j]+"_SORT_UPDOWN", new HashMap<String, Double>());
+                        put("SH_" + marketName[j]+"_SORT_RAISE", new HashMap<String, Double>());
+                        put("SH_" + marketName[j]+"_SORT_AMPLITUDE", new HashMap<String, Double>());
+                        put("SH_" + marketName[j]+"_SORT_TURNOVERRATE", new HashMap<String, Double>());
+                        put("SH_" + marketName[j]+"_SORT_EARMING", new HashMap<String, Double>());
+                    }
+                }
             }
         }        
         
@@ -332,19 +337,19 @@ public class ServerContext {
         ServerContext.marketList = marketList;
     }
     
-    public static ConcurrentHashMap<String,Double> getRaiseStopMap(){
+    public static ConcurrentHashMap<String,String> getRaiseStopMap(){
         return raiseStopMap;
     }
     
-    public static void setRaiseStopMap(ConcurrentHashMap<String,Double> raiseStopMap){
+    public static void setRaiseStopMap(ConcurrentHashMap<String,String> raiseStopMap){
         ServerContext.raiseStopMap = raiseStopMap;
     }
     
-    public static ConcurrentHashMap<String,Double> getFallStopMap(){
+    public static ConcurrentHashMap<String,String> getFallStopMap(){
         return fallStopMap;
     }
     
-    public static void setFallStopMap(ConcurrentHashMap<String, Double> fallStopMap){
+    public static void setFallStopMap(ConcurrentHashMap<String, String> fallStopMap){
         ServerContext.fallStopMap = fallStopMap;
     }
     

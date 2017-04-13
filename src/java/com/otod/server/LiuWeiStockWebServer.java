@@ -28,9 +28,12 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -51,7 +54,7 @@ public class LiuWeiStockWebServer extends Thread {
 
     private URL url = null;
     private String filePath = null;
-    private TimerThread signalTimer = new TimerThread();//time control and schedule
+    private TimerThread signalTimer = new TimerThread();
     private TimerThread chartToDBTimer = new TimerThread();
 
     public LiuWeiStockWebServer() {
@@ -67,23 +70,26 @@ public class LiuWeiStockWebServer extends Thread {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        // TODO code application logic here        
         LiuWeiStockWebServer liuWeiStockWebServer = new LiuWeiStockWebServer();
         liuWeiStockWebServer.start();
     }
 
     @Override
     public void run() {
+        String outPath = Config.OUT_FILE;  
+        try {  
+            System.setOut(new PrintStream(new FileOutputStream(outPath, true)));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(LiuWeiStockWebServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println("Hello world!"); 
+        
         System.out.println("LiuWeiStockWebServer Startup!");
         TimeZone tz = TimeZone.getTimeZone("GMT+8");
         TimeZone.setDefault(tz);
 
-        doAuthorize();
-        if (!ServerContext.isAuthorizeFlag()) {
-            return;
-        }
-
-        new ChartToDBThread().start();//按品种，单个分时或者k线同步数据
+        new ChartToDBThread().start();//k线保存到数据库处理(不停从队列中获取，然后同步数据库)
         new RTSnapshotHandleThread().start();
         new SignalHandleThread().start();//开收盘的信号处理过程
 

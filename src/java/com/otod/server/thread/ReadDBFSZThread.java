@@ -153,8 +153,8 @@ public class ReadDBFSZThread extends Thread {
                     listSortUpdownMap       = marketList.get(marketName+"_SORT_UPDOWN");//涨跌额
                     listSortRaiseMap        = marketList.get(marketName+"_SORT_RAISE");//涨跌幅
                     listSortAmplitudeMap    = marketList.get(marketName+"_SORT_AMPLITUDE");//振幅
-                    listSortTurnoverRateMap = marketList.get(marketName+"_SORT_SORT_TURNOVERRATE");//换手率
-                    listSortEarmingMap      = marketList.get(marketName+"_SORT_SORT_EARMING");//市盈率
+                    listSortTurnoverRateMap = marketList.get(marketName+"_SORT_TURNOVERRATE");//换手率
+                    listSortEarmingMap      = marketList.get(marketName+"_SORT_EARMING");//市盈率
                 }
                 /*
                 MasterData masterData = ServerContext.getMasterMap().get(symbol);
@@ -179,10 +179,10 @@ public class ReadDBFSZThread extends Thread {
                     try{
                         listSortMMap.put(symbol, Double.parseDouble(String.valueOf(rowValues[4]).trim()));                        
                         pClose = Double.parseDouble(String.valueOf(rowValues[2]).trim());
-                        lastPrice = Double.parseDouble(String.valueOf(rowValues[7]).trim());
-                        lowPrice = Double.parseDouble(String.valueOf(rowValues[6]).trim());
-                        hightPrice = Double.parseDouble(String.valueOf(rowValues[5]).trim());
-                        volume = Double.parseDouble(String.valueOf(rowValues[10]).trim());
+                        lastPrice = Double.parseDouble(String.valueOf(rowValues[4]).trim());
+                        lowPrice = Double.parseDouble(String.valueOf(rowValues[9]).trim());
+                        hightPrice = Double.parseDouble(String.valueOf(rowValues[8]).trim());
+                        volume = Double.parseDouble(String.valueOf(rowValues[5]).trim());
                         listSortRaiseMap.put(symbol, (lastPrice-pClose)/lastPrice);
                         listSortUpdownMap.put(symbol, lastPrice-pClose);
                         Help.checkIsDayRaiseFallStop(symbol, (lastPrice-pClose)/lastPrice);

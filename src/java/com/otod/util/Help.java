@@ -139,13 +139,13 @@ public class Help {
     *跌停:股票下跌10%
     */
     public static Boolean checkIsDayRaiseFallStop(String code, Double rate){
-        ConcurrentHashMap<String,Double> raiseStopMap = ServerContext.getRaiseStopMap();
-        ConcurrentHashMap<String, Double> fallStopMap = ServerContext.getFallStopMap();
+        ConcurrentHashMap<String,String> raiseStopMap = ServerContext.getRaiseStopMap();
+        ConcurrentHashMap<String, String> fallStopMap = ServerContext.getFallStopMap();
         if(rate > 0 && rate>=0.09){
-            raiseStopMap.put(code, rate);
+            raiseStopMap.put(code, code);
             return true;
         }else if(rate <0 && rate<=-0.09){
-            fallStopMap.put(code, rate);
+            fallStopMap.put(code, code);
             return true;
         }
         

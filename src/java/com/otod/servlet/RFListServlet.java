@@ -44,14 +44,14 @@ public class RFListServlet extends HttpServlet {
         String way      = request.getParameter("way");
         
         int iWay = Integer.parseInt(way);
-        ConcurrentHashMap<String,Double> StopMap = null;
+        ConcurrentHashMap<String,String> StopMap = null;
         if(iWay == 1)
             StopMap = ServerContext.getRaiseStopMap();        
         else
             StopMap = ServerContext.getFallStopMap();
         int size = StopMap.size();
         String[] codeList = new String[size];
-        StopMap.keySet().toArray(codeList);
+        StopMap.values().toArray(codeList);
         StockSnapshot stockSnapshot = null; 
         int j = 0;int decimal = 2;
         int i = 0;

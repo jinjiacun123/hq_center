@@ -15,6 +15,7 @@ public class MysqlConnector extends Connector {
     private static InitialContext ctx = null;
     private static DataSource ds = null;
 
+    /*
     static {
         if (ctx == null) {
             try {
@@ -26,6 +27,7 @@ public class MysqlConnector extends Connector {
             }
         }
     }
+*/
 
     public static InitialContext getCtx() {
         return ctx;
@@ -51,16 +53,26 @@ public class MysqlConnector extends Connector {
                 String url = Config.JDBC_URL;// 连接地址
                 String user = Config.JDBC_USERNAME;// 用户名
                 String password = Config.JDBC_PASSWORD;// 密码
-                //Class.forName(driverClassName);
-                con = DriverManager.getConnection(url, user, password);
+                try {
+                    Class.forName(driverClassName);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(MysqlConnector.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                //con = DriverManager.getConnection(url, user, password);
+                con = DriverManager.getConnection("jdbc:mysql://192.168.1.233:3306/quote_gp","root","root");
+                System.out.println("数据库连接成功!");                
             }
+            /*
             if (con == null) {
                 con = MysqlConnector.getDs().getConnection();
             }
+*/
 //            System.out.println(con.toString());
         } catch (SQLException e) {
             e.printStackTrace();
+            System.out.println("数据库连接失败:"+e.getSQLState());
         }
+        
         return con;
     }
 }

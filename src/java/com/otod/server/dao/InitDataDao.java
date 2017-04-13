@@ -65,6 +65,7 @@ public class InitDataDao {
         FinanceDao financeDao = new FinanceDao();
         financeDao.setConnector(connector);
         Map<String, FinanceData> financeMap = ServerContext.getFinanceMap();
+        System.out.println("要初始化的财务数据条数:"+financeMap.size());
         for (Map.Entry<String, MasterData> entryset : ServerContext.getMasterMap().entrySet()) {
             String symbol = (String) entryset.getKey();            
             FinanceData financeData = financeDao.getBySymbol(symbol);

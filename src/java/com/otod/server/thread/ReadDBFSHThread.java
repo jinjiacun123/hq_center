@@ -15,6 +15,7 @@ import com.otod.bean.quote.snapshot.StockSnapshot;
 import com.otod.util.Config;
 import com.otod.util.DateUtil;
 import com.otod.util.Help;
+import com.otod.util.StringUtil;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,7 +41,7 @@ public class ReadDBFSHThread extends Thread {
             Date start=new Date();
             doReadDBF();
             Date end=new Date();
-//            System.out.println("SH "+(end.getTime()-start.getTime()));
+           // System.out.println("SH "+(end.getTime()-start.getTime()));
             try {
                 Thread.sleep(500);
             } catch (InterruptedException ex) {
@@ -103,6 +104,7 @@ public class ReadDBFSHThread extends Thread {
             int time =  Integer.parseInt(DateUtil.formatDate(null, "HHmmss"));
             double pClose, lastPrice, lowPrice, hightPrice,volume;
             double ltag;
+            double earning;
             
             Map<String,Map<String, Double>> marketList = ServerContext.getMarketList();
             String marketName = "";
@@ -136,8 +138,8 @@ public class ReadDBFSHThread extends Thread {
                     listSortUpdownMap       = marketList.get(marketName+"_SORT_UPDOWN");//涨跌额
                     listSortRaiseMap        = marketList.get(marketName+"_SORT_RAISE");//涨跌幅
                     listSortAmplitudeMap    = marketList.get(marketName+"_SORT_AMPLITUDE");//振幅
-                    listSortTurnoverRateMap = marketList.get(marketName+"_SORT_SORT_TURNOVERRATE");//换手率
-                    listSortEarmingMap      = marketList.get(marketName+"_SORT_SORT_EARMING");//市盈率
+                    listSortTurnoverRateMap = marketList.get(marketName+"_SORT_TURNOVERRATE");//换手率
+                    listSortEarmingMap      = marketList.get(marketName+"_SORT_EARMING");//市盈率
                 }
                 
                 StockSnapshot stockSnapshot = new StockSnapshot();
@@ -166,13 +168,16 @@ public class ReadDBFSHThread extends Thread {
                         Help.checkIsDayRaiseFallStop(symbol, (lastPrice-pClose)/lastPrice);
                         listSortAmplitudeMap.put(symbol, (hightPrice - lowPrice)/lowPrice);
                         financeData = (FinanceData)financeMap.get(symbol);
-                        if(financeData != null && financeData.getGxrq() != 0){
-                            //listSortTurnoverRateMap.put(symbol, volume/5);
-                            //System.out.println(financeData.getLtag());
-                            stockSnapshot.setTurnoverRate(volume/financeData.getLtag());
-                            listSortTurnoverRateMap.put(symbol, volume/financeData.getLtag());
-                            stockSnapshot.setEarming(stockSnapshot.getLastPrice()/financeData.getShly());
-                            listSortEarmingMap.put(symbol, stockSnapshot.getLastPrice()/financeData.getShly());
+                        if(financeData != null && financeData.getSymbol() != null){                           
+                            if(financeData.getLtag() != 0){
+                                stockSnapshot.setTurnoverRate(volume/financeData.getLtag());
+                                listSortTurnoverRateMap.put(symbol, volume/financeData.getLtag());
+                            }
+                            if(financeData.getJly()!= 0){
+                                earning = stockSnapshot.getLastPrice()/((double)financeData.getJly()/financeData.getZgb());
+                                stockSnapshot.setEarming(Double.parseDouble(StringUtil.formatNumber(earning,3)));
+                                listSortEarmingMap.put(symbol,earning);
+                            }
                         }
                     }
                     catch(Exception ex){

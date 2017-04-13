@@ -189,15 +189,22 @@ public class LSortServlet extends HttpServlet{
                 json.put("pclose", stockSnapshot.pClose);
                 json.put("volume", StringUtil.formatNumber(stockSnapshot.getVolume(),0));
                 json.put("turnover", StringUtil.formatNumber(stockSnapshot.getTurnover(),0));
-                json.put("turnrate", StringUtil.formatNumber(stockSnapshot.getTurnoverRate(), 0));
-                json.put("earning", StringUtil.formatNumber(stockSnapshot.getEarming(), 0));
+                json.put("turnrate", StringUtil.formatNumber(stockSnapshot.getTurnoverRate(), 2));
+                json.put("earning", StringUtil.formatNumber(stockSnapshot.getEarming(), 2));
                 json.put("time", stockSnapshot.getQuoteTime());
                 array.add(json);
             }
 
         }
-
-          valueBuffer.append(array.toString()); 
+        /*
+        JSONObject json = new JSONObject();
+        json.put("record_count", list.size());
+        array.add(json);
+        */
+        JSONObject root = new JSONObject();
+        root.put("data", array);
+        root.put("record_count", list.size());
+          valueBuffer.append(root.toString()); 
 
         try {
             if (callback != null) {
