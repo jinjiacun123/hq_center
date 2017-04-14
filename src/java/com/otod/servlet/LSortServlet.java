@@ -149,8 +149,10 @@ public class LSortServlet extends HttpServlet{
         int i = 0, j = 0;
         i = Integer.parseInt(index);
         i--;
-        if(i<0){
+        if(i<=0){
             i=0;
+        }else{
+            i = (i-1)* Integer.parseInt(number);
         }
          for (; j<Integer.parseInt(number) && i< list.size(); i++,j++) {
             //if(i>10)
