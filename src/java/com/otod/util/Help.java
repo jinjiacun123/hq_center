@@ -174,4 +174,29 @@ public class Help {
                 + (byte) ((b >> 3) & 0x1) + (byte) ((b >> 2) & 0x1)  
                 + (byte) ((b >> 1) & 0x1) + (byte) ((b >> 0) & 0x1);  
     }  
+    
+    //统计上涨，下跌，平盘总数
+    public static void countPlat(String symbol, String market, Double rate){
+        Map<String, Map<String, String>> countMap = ServerContext.getCountMap();
+        String[] marketList = {
+           "SZ_A",
+           "SZ_MIDDLE",
+           "SZ_ACCOUNT"
+        }; 
+        //目标清除
+        countMap.get(market + "_"+ "UP_PAN").remove(symbol);
+        countMap.get(market + "_"+ "FLAT_PAN").remove(symbol);
+        countMap.get(market + "_"+ "DOWN_PAN").remove(symbol);
+        
+        //加入列表
+        if(rate > 0){
+            countMap.get(market + "_" + "UP_PAN").put(symbol, symbol);
+        }else if(rate == 0){
+            countMap.get(market + "_" + "FLAT_PAN").put(symbol, symbol);
+        }else if(rate < 0)
+        {
+            countMap.get(market + "_" + "DOWN_PAN").put(symbol, symbol);
+        }
+    }
+    
 }

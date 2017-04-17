@@ -60,6 +60,25 @@ public class ServerContext {
     private static ConcurrentHashMap<String, List<StockDividend>> stockDividendMap = new ConcurrentHashMap<String, List<StockDividend>>();
     private static ConcurrentHashMap<String, String> raiseStopMap = new ConcurrentHashMap<String, String>();//涨停
     private static ConcurrentHashMap<String, String> fallStopMap  = new ConcurrentHashMap<String, String>();//跌停
+    //上涨，下跌，平盘
+    private static Map<String, Map<String,String>> countMap = new HashMap<String, Map<String, String>>(){{
+       String[] marketList = {
+           "SH_A",
+           "SZ_A",
+           "SZ_MIDDLE",
+           "SZ_ACCOUNT"
+        };
+       String[] way = {
+           "UP_PAN",
+           "FLAT_PAN",
+           "DOWN_PAN"
+       };
+        for(int i = 0; i < marketList.length; i++){
+            put(marketList[i] + "_" + way[0], new HashMap<String, String>());//上涨
+            put(marketList[i] + "_" + way[1], new HashMap<String, String>());//平盘
+            put(marketList[i] + "_" + way[2], new HashMap<String, String>());//下跌;
+        }
+    }};
     //market
     private static Map<String,Map<String, Double>> marketList = new HashMap<String,Map<String, Double>>(){{
         String[] marketList = Config.MARKET_SZ.split(",");
@@ -351,6 +370,14 @@ public class ServerContext {
     
     public static void setFallStopMap(ConcurrentHashMap<String, String> fallStopMap){
         ServerContext.fallStopMap = fallStopMap;
+    }
+    
+    public static void setCountMap(Map<String, Map<String,String>> countMap){
+        ServerContext.countMap = countMap;
+    }
+    
+    public static Map<String, Map<String,String>> getCountMap(){
+        return countMap;
     }
     
     public static Map<String, FinanceData> getFinanceMap(){

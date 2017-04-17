@@ -185,6 +185,7 @@ public class ReadDBFSZThread extends Thread {
                         volume = Double.parseDouble(String.valueOf(rowValues[5]).trim());
                         listSortRaiseMap.put(symbol, (lastPrice-pClose)/lastPrice);
                         listSortUpdownMap.put(symbol, lastPrice-pClose);
+                        Help.countPlat(symbol, marketName, (lastPrice-pClose)/lastPrice);
                         Help.checkIsDayRaiseFallStop(symbol, (lastPrice-pClose)/lastPrice);
                         listSortAmplitudeMap.put(symbol, (hightPrice - lowPrice)/lowPrice);
                         financeData = (FinanceData)financeMap.get(symbol);
