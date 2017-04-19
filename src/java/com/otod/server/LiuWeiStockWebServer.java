@@ -90,7 +90,7 @@ public class LiuWeiStockWebServer extends Thread {
         TimeZone.setDefault(tz);
 
         new ChartToDBThread().start();//k线保存到数据库处理(不停从队列中获取，然后同步数据库)
-        new RTSnapshotHandleThread().start();
+        //new RTSnapshotHandleThread().start();
         new SignalHandleThread().start();//开收盘的信号处理过程
 
         /*
@@ -112,7 +112,7 @@ public class LiuWeiStockWebServer extends Thread {
             load minute and kline
             从数据库加载分时及其k线
         */
-        doInitData();
+        //doInitData();
 
         //new StockDividendThread().start();
 

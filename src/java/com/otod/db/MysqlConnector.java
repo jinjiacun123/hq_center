@@ -58,8 +58,8 @@ public class MysqlConnector extends Connector {
                 } catch (ClassNotFoundException ex) {
                     Logger.getLogger(MysqlConnector.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                //con = DriverManager.getConnection(url, user, password);
-                con = DriverManager.getConnection("jdbc:mysql://192.168.1.233:3306/quote_gp","root","root");
+                con = DriverManager.getConnection(url, user, password);
+                //con = DriverManager.getConnection("jdbc:mysql://192.168.1.233:3306/quote_gp","root","root");
                 System.out.println("数据库连接成功!");                
             }
             /*

@@ -22,6 +22,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
@@ -74,7 +75,7 @@ public class LSortServlet extends HttpServlet{
         String[] Markets = null;
         
         if(column == null || column.equals("")){
-            column = "SORT_M";
+            column = "SORT_RAISE";
         }
         
         if(index == null || index.equals("")){
@@ -85,52 +86,26 @@ public class LSortServlet extends HttpServlet{
         }
         if(market == null || market.equals("") ){
             market = "SH_A";
-        }else{
-            Markets = market.split(",");
         }
         if(way == null || way.equals("")){
             way = "0";
         }
-        
+        Markets = market.split(",");
         
         int date = 0;        
         int decimal = 2;
         int iWay = 0;
-        Map<String,Double> myMap = null;
+        Map<String,Double> myMap = new HashMap<String, Double>();
         List<Map.Entry<String, Double>> list = null;
-        
+  
         //1-成交额,2-涨跌幅,3-振幅,4-换手率,5-市盈率
         if(Markets != null){
-            if(Markets.length>0){
-                myMap = ServerContext.getMarketList().get(Markets[0]+"_"+column);
-                for(int i=1; i < Markets.length; i++){
-                    myMap.putAll(ServerContext.getMarketList().get(Markets[i]+"_"+column));
-                }
+            for(int i=0; i < Markets.length; i++){
+                myMap.putAll(ServerContext.getMarketList().get(Markets[i]+"_"+column));
             }
         }
-        else{
-            myMap  = ServerContext.getMarketList().get(market+"_"+column);
-        }
         iWay = Integer.parseInt(way);
-        /*
-        switch(iColumn){
-            case 1:{
-                myMap  = ServerContext.getMarketList().get(iMarket).get(iColumn-1);
-            }break;
-            case 2:{
-                myMap  = ServerContext.getListSortRaiseMap();
-            }break;
-            case 3:{
-                myMap  = ServerContext.getListSortAmplitudeMap();
-            }break;
-            case 4:{
-                myMap  = ServerContext.getListSortTurnoverRateMap();
-            }break;
-            case 5:{
-                myMap  = ServerContext.getListSortEarmingMap();
-            }break;
-        }
-        */
+       
         if(myMap != null){
             if(iWay == 0){
                 list = Help.sort_by_double(myMap);
@@ -141,10 +116,9 @@ public class LSortServlet extends HttpServlet{
         else
             return;
         
-        JSONArray array = new JSONArray();
-        PrintWriter out = response.getWriter();
+        PrintWriter out = response.getWriter();        
+        JSONArray array = new JSONArray();        
         StringBuffer valueBuffer = new StringBuffer();
-
         StockSnapshot stockSnapshot = null;   
         int i = 0, j = 0;
         i = Integer.parseInt(index);
@@ -152,7 +126,7 @@ public class LSortServlet extends HttpServlet{
         if(i<=0){
             i=0;
         }else{
-            i = (i-1)* Integer.parseInt(number);
+            i = i* Integer.parseInt(number);
         }
          for (; j<Integer.parseInt(number) && i< list.size(); i++,j++) {
             //if(i>10)
@@ -160,8 +134,9 @@ public class LSortServlet extends HttpServlet{
             stockSnapshot = (StockSnapshot) ServerContext.getSnapshotMap().get(list.get(i).getKey().toString());
             if (stockSnapshot != null) {
                 JSONObject json = new JSONObject();
-                json.put("symbol", list.get(i).getKey().toString());
-                json.put("name", stockSnapshot.cnName);               
+                json.put("symbol",  list.get(i).getKey().toString().replace("SH", "").replace("SZ",""));
+                //json.put("symbol",  list.get(i).getKey().toString());                
+                json.put("name", stockSnapshot.cnName);
                 json.put("bid1price", stockSnapshot.bidQueue.get(0).price);
                 json.put("bid1volume", stockSnapshot.bidQueue.get(0).volume);
                 json.put("bid2price", stockSnapshot.bidQueue.get(1).price);
@@ -181,19 +156,24 @@ public class LSortServlet extends HttpServlet{
                 json.put("ask4price", stockSnapshot.askQueue.get(1).price);
                 json.put("ask4volume", stockSnapshot.askQueue.get(1).volume);
                 json.put("ask5price", stockSnapshot.askQueue.get(0).price);
-                json.put("ask5volume", stockSnapshot.askQueue.get(0).volume);                
+                json.put("ask5volume", stockSnapshot.askQueue.get(0).volume);
+                
                 json.put("change", StringUtil.formatNumber(stockSnapshot.change, decimal));
-                json.put("changerate", StringUtil.formatNumber(stockSnapshot.changeRate, 2) + "%");
+               
+                json.put("changerate", StringUtil.formatNumber(stockSnapshot.changeRate, 2)+'%');
+                
                 json.put("open", stockSnapshot.getOpenPrice());
                 json.put("high", stockSnapshot.getHighPrice());
                 json.put("low", stockSnapshot.getLowPrice());
                 json.put("close", stockSnapshot.getLastPrice());
                 json.put("pclose", stockSnapshot.pClose);
+                
                 json.put("volume", StringUtil.formatNumber(stockSnapshot.getVolume(),0));
                 json.put("turnover", StringUtil.formatNumber(stockSnapshot.getTurnover(),0));
                 json.put("turnrate", StringUtil.formatNumber(stockSnapshot.getTurnoverRate(), 2));
                 json.put("earning", StringUtil.formatNumber(stockSnapshot.getEarming(), 2));
                 json.put("time", stockSnapshot.getQuoteTime());
+                
                 array.add(json);
             }
 

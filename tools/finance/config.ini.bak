@@ -1,1 +1,13 @@
-http://221.6.167.248:8088/基本面资料.DBF
+[baseconf]
+host=127.0.0.1
+port=3306
+user=root
+password=root
+db_name=evaluting_sys
+[concurrent]
+processor=20
+[urlconf]
+find_url=http://221.6.167.248:8088/基本面资料.DBF
+right_url=http://221.6.167.248:8082/sysFin/
+[logconf]
+log=

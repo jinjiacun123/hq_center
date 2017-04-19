@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -96,7 +97,10 @@ public class ReadDBFSZThread extends Thread {
             int date = Integer.parseInt(DateUtil.formatDate(null, "yyyyMMdd"));
             int time =  Integer.parseInt(DateUtil.formatDate(null, "HHmmss"));
             double pClose, lastPrice, lowPrice, hightPrice,volume;
+            double change_rate, change;
             double ltag;
+            double earning;
+            DecimalFormat df = new DecimalFormat("#.00000"); 
             
             Map<String,Map<String, Double>> marketList = ServerContext.getMarketList();
             String marketName = "";
@@ -109,6 +113,7 @@ public class ReadDBFSZThread extends Thread {
             Map<String, Double> listSortEarmingMap      = null;//市盈率
             Map<String, FinanceData> financeMap  = ServerContext.getFinanceMap();
             FinanceData financeData = null;
+            
             while ((rowValues = reader.nextRecord()) != null) {
                 if (rowValues[0] == null) {
                     continue;
@@ -144,7 +149,8 @@ public class ReadDBFSZThread extends Thread {
                 if (symbol.equals("") || symbol.length() < 6) {
                     continue;
                 }
-                symbol = "SZ" + symbol;                
+                symbol = "SZ" + symbol;     
+                
                 marketName = Help.findMarketByCode(Config.TYPE_SZ, symbol);
                
                 if(marketName != ""){
@@ -156,7 +162,8 @@ public class ReadDBFSZThread extends Thread {
                     listSortTurnoverRateMap = marketList.get(marketName+"_SORT_TURNOVERRATE");//换手率
                     listSortEarmingMap      = marketList.get(marketName+"_SORT_EARMING");//市盈率
                 }
-                /*
+                
+                /*                
                 MasterData masterData = ServerContext.getMasterMap().get(symbol);
                 if (masterData == null) {
                     continue;
@@ -174,6 +181,7 @@ public class ReadDBFSZThread extends Thread {
                 stockSnapshot.setpClose(Double.parseDouble(String.valueOf(rowValues[2]).trim()));
                 stockSnapshot.setVolume(getVolume(String.valueOf(rowValues[5]).trim()));
                 stockSnapshot.setTurnover(Double.parseDouble(String.valueOf(rowValues[6]).trim()));
+                
                 //new add
                 if((!marketName.equals("")&&(!symbol.startsWith("SZ000000")))){
                     try{
@@ -183,25 +191,30 @@ public class ReadDBFSZThread extends Thread {
                         lowPrice = Double.parseDouble(String.valueOf(rowValues[9]).trim());
                         hightPrice = Double.parseDouble(String.valueOf(rowValues[8]).trim());
                         volume = Double.parseDouble(String.valueOf(rowValues[5]).trim());
-                        listSortRaiseMap.put(symbol, (lastPrice-pClose)/lastPrice);
-                        listSortUpdownMap.put(symbol, lastPrice-pClose);
-                        Help.countPlat(symbol, marketName, (lastPrice-pClose)/lastPrice);
-                        Help.checkIsDayRaiseFallStop(symbol, (lastPrice-pClose)/lastPrice);
-                        listSortAmplitudeMap.put(symbol, (hightPrice - lowPrice)/lowPrice);
+                        change_rate = 100*(lastPrice-pClose)/(double)pClose;
+                        change_rate = Double.parseDouble(df.format(change_rate));
+                        listSortRaiseMap.put(symbol, change_rate);
+                        listSortUpdownMap.put(symbol, (double)lastPrice-(double)pClose);
+                        stockSnapshot.setChange(lastPrice-pClose);
+                        stockSnapshot.setChangeRate(change_rate);
+                        Help.countPlat(symbol, marketName, (lastPrice-pClose)/(double)pClose);
+                        Help.checkIsDayRaiseFallStop(symbol, (lastPrice-pClose)/(double)pClose);
+                        listSortAmplitudeMap.put(symbol, (hightPrice - lowPrice)/(double)lowPrice);
                         financeData = (FinanceData)financeMap.get(symbol);
                         if(financeData != null && financeData.getGxrq() != 0){
                             //listSortTurnoverRateMap.put(symbol, volume/5);
                             //System.out.println(financeData.getLtag());
-                            stockSnapshot.setTurnoverRate(volume/financeData.getLtag());
-                            listSortTurnoverRateMap.put(symbol, volume/financeData.getLtag());
-                            stockSnapshot.setEarming(stockSnapshot.getLastPrice()/financeData.getShly());
-                            listSortEarmingMap.put(symbol, stockSnapshot.getLastPrice()/financeData.getShly());
+                            stockSnapshot.setTurnoverRate(volume/(double)financeData.getLtag());
+                            listSortTurnoverRateMap.put(symbol, volume/(double)financeData.getLtag());
+                            stockSnapshot.setEarming(stockSnapshot.getLastPrice()/(double)financeData.getShly());
+                            listSortEarmingMap.put(symbol, stockSnapshot.getLastPrice()/(double)financeData.getShly());
                         }
                     }
                     catch(Exception ex){
                         //System.out.println("err:"+String.valueOf(rowValues[4]).trim());
                     }
                 }
+
                 BidAsk ask1 = new BidAsk();
                 ask1.setPrice(Double.parseDouble(String.valueOf(rowValues[15]).trim()));
                 ask1.setVolume(getVolume(String.valueOf(rowValues[16]).trim()));
