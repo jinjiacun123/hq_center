@@ -6,6 +6,7 @@
 package com.otod.servlet;
 
 import com.otod.bean.ServerContext;
+import com.otod.bean.UpDownStopPrice;
 import com.otod.bean.quote.StockDividend;
 
 import com.otod.bean.quote.kline.KLineData;
@@ -134,9 +135,10 @@ public class LSortServlet extends HttpServlet{
             stockSnapshot = (StockSnapshot) ServerContext.getSnapshotMap().get(list.get(i).getKey().toString());
             if (stockSnapshot != null) {
                 JSONObject json = new JSONObject();
+                UpDownStopPrice upDownStopPrice = new UpDownStopPrice(stockSnapshot.cnName, stockSnapshot.pClose);
                 json.put("symbol",  list.get(i).getKey().toString().replace("SH", "").replace("SZ",""));
                 //json.put("symbol",  list.get(i).getKey().toString());                
-                json.put("name", stockSnapshot.cnName);
+                json.put("name", stockSnapshot.cnName);                
                 json.put("bid1price", stockSnapshot.bidQueue.get(0).price);
                 json.put("bid1volume", stockSnapshot.bidQueue.get(0).volume);
                 json.put("bid2price", stockSnapshot.bidQueue.get(1).price);
@@ -167,7 +169,8 @@ public class LSortServlet extends HttpServlet{
                 json.put("low", stockSnapshot.getLowPrice());
                 json.put("close", stockSnapshot.getLastPrice());
                 json.put("pclose", stockSnapshot.pClose);
-                
+                json.put("upstopprice", StringUtil.formatNumber(upDownStopPrice.getUpStopPrice(), 2));
+                json.put("downstopprice", StringUtil.formatNumber(upDownStopPrice.getDownStopPrice(), 2));
                 json.put("volume", StringUtil.formatNumber(stockSnapshot.getVolume(),0));
                 json.put("turnover", StringUtil.formatNumber(stockSnapshot.getTurnover(),0));
                 json.put("turnrate", StringUtil.formatNumber(stockSnapshot.getTurnoverRate(), 2));
