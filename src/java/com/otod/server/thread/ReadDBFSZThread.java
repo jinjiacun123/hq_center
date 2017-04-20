@@ -191,8 +191,12 @@ public class ReadDBFSZThread extends Thread {
                         lowPrice = Double.parseDouble(String.valueOf(rowValues[9]).trim());
                         hightPrice = Double.parseDouble(String.valueOf(rowValues[8]).trim());
                         volume = Double.parseDouble(String.valueOf(rowValues[5]).trim());
-                        change_rate = 100*(lastPrice-pClose)/(double)pClose;
-                        change_rate = Double.parseDouble(df.format(change_rate));
+                        if(lastPrice != 0){
+                            change_rate = 100*(lastPrice-pClose)/(double)pClose;
+                            change_rate = Double.parseDouble(df.format(change_rate));
+                        }else{
+                            change_rate = 0.00;
+                        }
                         listSortRaiseMap.put(symbol, change_rate);
                         listSortUpdownMap.put(symbol, (double)lastPrice-(double)pClose);
                         stockSnapshot.setChange(lastPrice-pClose);

@@ -4,14 +4,18 @@
  */
 package com.otod.servlet;
 
+import com.otod.bean.ServerContext;
 import com.otod.bean.quote.kline.KLineData;
 import com.otod.dao.DayDao;
 import com.otod.db.Connector;
 import com.otod.db.MysqlConnector;
 import com.otod.util.ApplicationConstant;
+import com.otod.util.Help;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +40,19 @@ public class TestServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        String market = request.getParameter("market");
+        String column = request.getParameter("column");
+        
+        Map<String,Double> myMap = new HashMap<String,Double>();
+        List<Map.Entry<String, Double>> list = null;
+        PrintWriter out = response.getWriter();   
+        
+        myMap.putAll(ServerContext.getMarketList().get(market+"_"+column));
+        list = Help.sort_by_double_ex(myMap);
+        for(int i = 0; i < list.size(); i++){
+            out.println(list.get(i).getKey()+":"+list.get(i).getValue());
+        }
+        /*
         Connector connector = null;
         try {
             connector = new MysqlConnector();
@@ -60,6 +77,7 @@ public class TestServlet extends HttpServlet {
                 connector.close();
             }
         }
+        */
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
