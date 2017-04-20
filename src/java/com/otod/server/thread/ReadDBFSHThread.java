@@ -187,13 +187,14 @@ public class ReadDBFSHThread extends Thread {
                         financeData = (FinanceData)financeMap.get(symbol);
                         if(financeData != null && financeData.getSymbol() != null){                           
                             if(financeData.getLtag() != 0){
-                                stockSnapshot.setTurnoverRate((double)volume/financeData.getLtag());
-                                listSortTurnoverRateMap.put(symbol, (double)volume/financeData.getLtag());
+                                ltag = volume/financeData.getLtag();
+                                stockSnapshot.setTurnoverRate(Double.parseDouble(StringUtil.formatNumber(ltag,5)));
+                                listSortTurnoverRateMap.put(symbol, Double.parseDouble(StringUtil.formatNumber(ltag,5)));
                             }
                             if(financeData.getJly()!= 0){
-                                earning = stockSnapshot.getLastPrice()/((double)financeData.getJly()/financeData.getZgb());
-                                stockSnapshot.setEarming(Double.parseDouble(StringUtil.formatNumber(earning,3)));
-                                listSortEarmingMap.put(symbol,earning);
+                                earning = stockSnapshot.getLastPrice()/(financeData.getJly()/financeData.getZgb());
+                                stockSnapshot.setEarming(Double.parseDouble(StringUtil.formatNumber(earning,5)));
+                                listSortEarmingMap.put(symbol,Double.parseDouble(StringUtil.formatNumber(earning,5)));
                             }
                         }
                     }

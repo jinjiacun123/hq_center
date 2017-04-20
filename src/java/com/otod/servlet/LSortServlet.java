@@ -49,7 +49,7 @@ public class LSortServlet extends HttpServlet{
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        response.setContentType("text/json;charset=UTF-8");
         String symbol = request.getParameter("symbol");
         String number = request.getParameter("number");
         String from = request.getParameter("from");
@@ -138,7 +138,8 @@ public class LSortServlet extends HttpServlet{
                 UpDownStopPrice upDownStopPrice = new UpDownStopPrice(stockSnapshot.cnName, stockSnapshot.pClose);
                 json.put("symbol",  list.get(i).getKey().toString().replace("SH", "").replace("SZ",""));
                 //json.put("symbol",  list.get(i).getKey().toString());                
-                json.put("name", stockSnapshot.cnName);                
+                json.put("name", stockSnapshot.cnName);      
+                
                 json.put("bid1price", stockSnapshot.bidQueue.get(0).price);
                 json.put("bid1volume", stockSnapshot.bidQueue.get(0).volume);
                 json.put("bid2price", stockSnapshot.bidQueue.get(1).price);
@@ -176,7 +177,7 @@ public class LSortServlet extends HttpServlet{
                 json.put("turnrate", StringUtil.formatNumber(stockSnapshot.getTurnoverRate(), 2));
                 json.put("earning", StringUtil.formatNumber(stockSnapshot.getEarming(), 2));
                 json.put("time", stockSnapshot.getQuoteTime());
-                
+               
                 array.add(json);
             }
 

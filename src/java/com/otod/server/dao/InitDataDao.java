@@ -52,8 +52,8 @@ public class InitDataDao {
     public void doWork() {
         try {
             System.out.println("开始加载！");
-            doInitMinute();//初始化分钟信息
-            doInitKLine();//初始化k线信息
+           // doInitMinute();//初始化分钟信息
+           // doInitKLine();//初始化k线信息
             doInitFinance();//初始化财务信息
             System.out.println("加载完成！");
         } finally {

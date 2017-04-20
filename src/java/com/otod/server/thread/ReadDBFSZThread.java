@@ -14,6 +14,7 @@ import com.otod.bean.quote.snapshot.StockSnapshot;
 import com.otod.util.Config;
 import com.otod.util.DateUtil;
 import com.otod.util.Help;
+import com.otod.util.StringUtil;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -205,13 +206,17 @@ public class ReadDBFSZThread extends Thread {
                         Help.checkIsDayRaiseFallStop(symbol, (lastPrice-pClose)/(double)pClose);
                         listSortAmplitudeMap.put(symbol, (hightPrice - lowPrice)/(double)lowPrice);
                         financeData = (FinanceData)financeMap.get(symbol);
-                        if(financeData != null && financeData.getGxrq() != 0){
-                            //listSortTurnoverRateMap.put(symbol, volume/5);
-                            //System.out.println(financeData.getLtag());
-                            stockSnapshot.setTurnoverRate(volume/(double)financeData.getLtag());
-                            listSortTurnoverRateMap.put(symbol, volume/(double)financeData.getLtag());
-                            stockSnapshot.setEarming(stockSnapshot.getLastPrice()/(double)financeData.getShly());
-                            listSortEarmingMap.put(symbol, stockSnapshot.getLastPrice()/(double)financeData.getShly());
+                        if(financeData != null && financeData.getSymbol() != null){                           
+                            if(financeData.getLtag() != 0){
+                                ltag = volume/financeData.getLtag();
+                                stockSnapshot.setTurnoverRate(Double.parseDouble(StringUtil.formatNumber(ltag,5)));
+                                listSortTurnoverRateMap.put(symbol, Double.parseDouble(StringUtil.formatNumber(ltag,5)));
+                            }
+                            if(financeData.getJly()!= 0){
+                                earning = stockSnapshot.getLastPrice()/(financeData.getJly()/financeData.getZgb());
+                                stockSnapshot.setEarming(Double.parseDouble(StringUtil.formatNumber(earning,5)));
+                                listSortEarmingMap.put(symbol,Double.parseDouble(StringUtil.formatNumber(earning,5)));
+                            }
                         }
                     }
                     catch(Exception ex){

@@ -16,7 +16,7 @@ public class FinanceData {
     private int    id;
     private String symbol;      //证券代码
     private int    gxrq;        //财务更新日期
-    private int    zgb;         //总股本',
+    private double zgb;         //总股本',
     private int    gjg;         //'国家股',
     private double fqrfrg;      //'发起人股',
     private double frg;         //'法人股',
@@ -80,11 +80,11 @@ public class FinanceData {
         this.gxrq = gxrq;
     }
 
-    public int  getZgb(){
+    public double  getZgb(){
         return zgb;
     }
 
-    public void setZgb(int zgb){
+    public void setZgb(double zgb){
         this.zgb = zgb;
     }
 

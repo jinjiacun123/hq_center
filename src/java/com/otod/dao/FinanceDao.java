@@ -62,7 +62,7 @@ public class FinanceDao extends ParentDao {
 		financeData.setSnsytz(rs.getInt("snsytz"));      //'���',
 		financeData.setLyze(rs.getInt("lyze"));        //'�����ܶ�',
 		financeData.setShly(rs.getDouble("shly"));        //'˰������',
-		financeData.setJly(rs.getInt("jly"));         //'������             JLY/ZGB=ÿ������',
+		financeData.setJly(rs.getDouble("jly"));         //'������             JLY/ZGB=ÿ������',
 		financeData.setWfply(rs.getInt("wfply"));       //'δ��������',
 		financeData.setTzmgjz(rs.getInt("tzmgjz"));      //'�������ʲ�',
 		financeData.setDy(rs.getInt("dy"));          //'����',
@@ -84,7 +84,7 @@ public class FinanceDao extends ParentDao {
     public FinanceData getBySymbol(String symbol)
     {
         FinanceData financeData = new FinanceData();
-        String sql = "select * from finance where symbol=?";
+        String sql = "select symbol,zgb,jly,ltag from finance where symbol=?";
         PreparedStatement ps = null;
         ResultSet rs = null;
         Connection con = null;
@@ -95,16 +95,21 @@ public class FinanceDao extends ParentDao {
             rs = ps.executeQuery();
             while (rs.next()) {
                 financeData.setDataType(ApplicationConstant.DB_DATA);
-                financeData.setId(rs.getInt("id"));
+                //financeData.setId(rs.getInt("id"));
                 financeData.setSymbol(rs.getString("symbol"));
-                financeData.setGxrq(rs.getInt("gxrq"));        //�����������
-		financeData.setZgb(rs.getInt("zgb"));         //�ܹɱ�',
+               
+               // financeData.setGxrq(rs.getInt("gxrq"));       ���
+
+		financeData.setZgb(rs.getDouble("zgb"));         //�ܹɱ�',
+                /*
 		financeData.setGjg(rs.getInt("gjg"));         //'���ҹ�',
 		financeData.setFqrfrg(rs.getInt("fqrfrg"));      //'�����˹�',
 		financeData.setFrg(rs.getInt("frg"));         //'���˹�',
 		financeData.setBg(rs.getInt("bg"));          //'B��',
 		financeData.setHg(rs.getInt("hg"));          //'H��',
+                */
 		financeData.setLtag(rs.getInt("ltag"));        //'��ͨA��',
+                /*
 		financeData.setZgg(rs.getInt("zgg"));         //'ְ����',
 		financeData.setZpg(rs.getInt("zpg"));         //'ת���',
 		financeData.setZzc(rs.getDouble("zzc"));         //'���ʲ�',
@@ -126,7 +131,9 @@ public class FinanceDao extends ParentDao {
 		financeData.setSnsytz(rs.getInt("snsytz"));      //'���',
 		financeData.setLyze(rs.getInt("lyze"));        //'�����ܶ�',
 		financeData.setShly(rs.getDouble("shly"));        //'˰������',
-		financeData.setJly(rs.getInt("jly"));         //'������             JLY/ZGB=ÿ������',
+*/
+		financeData.setJly(rs.getDouble("jly"));         //'������             JLY/ZGB=ÿ������',
+                /*
 		financeData.setWfply(rs.getInt("wfply"));       //'δ��������',
 		financeData.setTzmgjz(rs.getInt("tzmgjz"));      //'�������ʲ�',
 		financeData.setDy(rs.getInt("dy"));          //'����',
@@ -135,6 +142,7 @@ public class FinanceDao extends ParentDao {
 //		financeData.setSsdate(rs.getString("ssdate"));      //'��������',
 		financeData.setModidate(rs.getString("modidate"));    //'��',
 		financeData.setGdrs(rs.getString("gdrs"));        //'��',
+*/
             }
         } catch (Exception e) {
             e.printStackTrace();

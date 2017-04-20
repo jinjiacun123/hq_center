@@ -112,7 +112,7 @@ public class LiuWeiStockWebServer extends Thread {
             load minute and kline
             从数据库加载分时及其k线
         */
-        //doInitData();
+        doInitData();
 
         //new StockDividendThread().start();
 
