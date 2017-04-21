@@ -23,9 +23,12 @@ public class SignalHandleThread extends Thread {
         while (true) {
             try {
                 obj = ServerContext.getSignalQueue().take();
+                /*
                 if (obj instanceof MasterData) {
                     doMaster((MasterData) obj);
-                } else if (obj instanceof ExchangeData) {
+                } else 
+                */
+                if (obj instanceof ExchangeData) {
                     doExchange((ExchangeData) obj);
                 }
             } catch (InterruptedException ex) {

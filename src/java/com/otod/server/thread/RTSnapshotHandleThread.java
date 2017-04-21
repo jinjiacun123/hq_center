@@ -66,7 +66,7 @@ public class RTSnapshotHandleThread extends Thread {
                         continue;
                     }
 
-
+/*
                     PeriodTime periodTime = ServerContext.getPeriodTimeMap().get(masterData.tradeTimeKey + "_minite1");
                     if (periodTime == null) {
                         periodTime = new PeriodTime();
@@ -79,6 +79,7 @@ public class RTSnapshotHandleThread extends Thread {
                     if (idx < 0) {
                         continue;
                     }
+*/
 //                    doTick(snapshot.getSymbol());
                     hSnapshot.updateSnapshot(snapshot);
 //                    ServerContext.getQuoteToDBQueue().add(hSnapshot);
@@ -87,16 +88,20 @@ public class RTSnapshotHandleThread extends Thread {
                     }
 //                    System.out.println(snapshot.getSymbol()+"||"+((FuturesSnapshot)snapshot).getVarietyID());
 
+/*
                     doCalMinute(snapshot.getSymbol());
                     doCalMinuteKLine(snapshot.getSymbol(), ApplicationConstant.MINUTE1);
                     doCalMinuteKLine(snapshot.getSymbol(), ApplicationConstant.MINUTE5);
                     doCalMinuteKLine(snapshot.getSymbol(), ApplicationConstant.MINUTE15);
                     doCalMinuteKLine(snapshot.getSymbol(), ApplicationConstant.MINUTE30);
                     doCalMinuteKLine(snapshot.getSymbol(), ApplicationConstant.MINUTE60);
+*/
 //                    doCalMinuteKLine(snapshot.getSymbol(), ApplicationConstant.MINUTE4H);
+/*
                     doDayKLine(snapshot.getSymbol());
                     doWeekKLine(snapshot.getSymbol());
                     doMonthKLine(snapshot.getSymbol());
+*/
                     doSnapshotList(snapshot.getSymbol());
                     snapshot = null;
 

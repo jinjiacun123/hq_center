@@ -83,14 +83,13 @@ public class LiuWeiStockWebServer extends Thread {
         } catch (FileNotFoundException ex) {
             Logger.getLogger(LiuWeiStockWebServer.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("Hello world!"); 
         
         System.out.println("LiuWeiStockWebServer Startup!");
         TimeZone tz = TimeZone.getTimeZone("GMT+8");
         TimeZone.setDefault(tz);
 
-        new ChartToDBThread().start();//k线保存到数据库处理(不停从队列中获取，然后同步数据库)
-        //new RTSnapshotHandleThread().start();
+       // new ChartToDBThread().start();//k线保存到数据库处理(不停从队列中获取，然后同步数据库)
+       // new RTSnapshotHandleThread().start();
         new SignalHandleThread().start();//开收盘的信号处理过程
 
         /*
@@ -125,13 +124,12 @@ public class LiuWeiStockWebServer extends Thread {
         /**
          * 处理节假日，每20秒触发一次
          */
-        doSignalTimer();//singal trigger
+       // doSignalTimer();//singal trigger
         /**
          * 处理分时及其k线同步数据库，没1分钟触发一次
          * 触发调度处理：按品种，批量同步数据库
          */
-        doChartToDBTimer();//chart trigger
-
+        //doChartToDBTimer();//chart trigger
     }
 
     private void doAuthorize() {
@@ -332,12 +330,14 @@ public class LiuWeiStockWebServer extends Thread {
                 }
                 MasterData masterData = new MasterData();
                 String qz = symbol.substring(0, 1);
-                if (qz.equals("0") || qz.equals("6") || qz.equals("9")) {
+                if (qz.equals("0") || qz.equals("1") || qz.equals("2") 
+                 || qz.equals("5") || qz.equals("6") || qz.equals("7")
+                 || qz.equals("9")) {
                     masterData.symbol = "SH" + String.valueOf(rowValues[0]).trim();
                     masterData.cnName = String.valueOf(rowValues[1]).trim();
                     masterData.exchCode = "SH";
                     ServerContext.getMasterMap().put(masterData.symbol, masterData);
-//                System.out.println(masterData.symbol + "||" + masterData.cnName);
+                   // System.out.println(masterData.symbol + "||" + masterData.cnName);
                     count++;
                 }
             }
@@ -395,7 +395,7 @@ public class LiuWeiStockWebServer extends Thread {
                 }
                 MasterData masterData = new MasterData();
                 String qz = symbol.substring(0, 1);
-                if (qz.equals("3") || qz.equals("0") || qz.equals("9") || qz.equals("2")) {
+                if (qz.equals("3") || qz.equals("0") || qz.equals("3") || qz.equals("2")) {
                     masterData.symbol = "SZ" + String.valueOf(rowValues[0]).trim();
                     masterData.cnName = String.valueOf(rowValues[1]).trim();
                     masterData.exchCode = "SZ";

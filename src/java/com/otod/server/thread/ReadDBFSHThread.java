@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -81,8 +82,7 @@ public class ReadDBFSHThread extends Thread {
 //            System.out.println(ex.toString());
         } finally {
             if (buffer != null) {
-                buffer.clear();
-                buffer = null;
+                buffer.clear();                             
             }
             try {
                 if (is != null) {
@@ -147,8 +147,14 @@ public class ReadDBFSHThread extends Thread {
                     listSortEarmingMap      = marketList.get(marketName+"_SORT_EARMING");//市盈率
                 }
                 
+                MasterData masterData = ServerContext.getMasterMap().get(symbol);
+                if (masterData == null) {
+                    continue;
+                }
                 
-                StockSnapshot stockSnapshot = new StockSnapshot();
+                StockSnapshot stockSnapshot = (StockSnapshot) ServerContext.getSnapshotMap().get(symbol);
+                if(stockSnapshot == null)
+                    stockSnapshot = new StockSnapshot();
                 stockSnapshot.setSymbol(symbol);
                 stockSnapshot.setCnName(String.valueOf(rowValues[1]).trim());
                 stockSnapshot.setQuoteDate(date);
@@ -156,7 +162,7 @@ public class ReadDBFSHThread extends Thread {
                 stockSnapshot.setOpenPrice(Double.parseDouble(String.valueOf(rowValues[3]).trim()));
                 stockSnapshot.setHighPrice(Double.parseDouble(String.valueOf(rowValues[5]).trim()));
                 stockSnapshot.setLowPrice(Double.parseDouble(String.valueOf(rowValues[6]).trim()));
-                stockSnapshot.setLastPrice(Double.parseDouble(String.valueOf(rowValues[7]).trim()));
+                stockSnapshot.setLastPrice(Double.parseDouble(String.valueOf(rowValues[7]).trim()));//+new Random().nextInt(10) + 1
                 stockSnapshot.setpClose(Double.parseDouble(String.valueOf(rowValues[2]).trim()));
                 stockSnapshot.setVolume(getVolume(String.valueOf(rowValues[10]).trim()));
                 stockSnapshot.setTurnover(Double.parseDouble(String.valueOf(rowValues[4]).trim()));
@@ -182,8 +188,12 @@ public class ReadDBFSHThread extends Thread {
                         stockSnapshot.setChange(lastPrice-pClose);
                         stockSnapshot.setChangeRate(change_rate);
                         Help.countPlat(symbol, marketName, (lastPrice-pClose)/(double)pClose);
-                        Help.checkIsDayRaiseFallStop(symbol, (lastPrice-pClose)/(double)pClose);
+                       // Help.checkIsDayRaiseFallStop(symbol, (lastPrice-pClose)/(double)pClose);
+                       if((hightPrice - lowPrice) != 0)
                         listSortAmplitudeMap.put(symbol, (hightPrice - lowPrice)/(double)pClose);
+                       else{
+                           listSortAmplitudeMap.put(symbol, 0.00);
+                       }
                         financeData = (FinanceData)financeMap.get(symbol);
                         if(financeData != null && financeData.getSymbol() != null){                           
                             if(financeData.getLtag() != 0){
@@ -199,52 +209,104 @@ public class ReadDBFSHThread extends Thread {
                         }
                     }
                     catch(Exception ex){
-                        //System.out.println("err:"+String.valueOf(rowValues[4]).trim());
+                        System.out.println("err:"+String.valueOf(rowValues[4]).trim());
                     }
                 }
                 
-                BidAsk bid1 = new BidAsk();
-//                System.out.println(String.valueOf(rowValues[14]).trim());
+                /*
+                BidAsk bid1 = null;
+                if(stockSnapshot.getBidQueue().size() == 0){
+                    bid1 = new BidAsk();
+                }else{
+                    bid1 = (BidAsk)stockSnapshot.getBidQueue().get(0);
+                }
                 bid1.setPrice(Double.parseDouble(String.valueOf(rowValues[8]).trim()));
-                bid1.setVolume(getVolume(String.valueOf(rowValues[12]).trim()));
+                bid1.setVolume(getVolume(String.valueOf(rowValues[12]).trim()));                
                 stockSnapshot.getBidQueue().add(bid1);
-                BidAsk ask1 = new BidAsk();
+                BidAsk ask1 = null;
+                if(stockSnapshot.getAskQueue().size() == 0){
+                    ask1 = new BidAsk();
+                }
+                else{
+                    ask1 = (BidAsk)stockSnapshot.getAskQueue().get(0);
+                }
                 ask1.setPrice(Double.parseDouble(String.valueOf(rowValues[9]).trim()));
                 ask1.setVolume(getVolume(String.valueOf(rowValues[17]).trim()));
                 stockSnapshot.getAskQueue().add(0, ask1);
-                BidAsk bid2 = new BidAsk();
+                BidAsk bid2 = null;
+                if(stockSnapshot.getBidQueue().size() == 1){
+                    bid2 = new BidAsk();
+                }else{
+                   bid2 = (BidAsk)stockSnapshot.getBidQueue().get(1);
+                }
                 bid2.setPrice(Double.parseDouble(String.valueOf(rowValues[13]).trim()));
                 bid2.setVolume(getVolume(String.valueOf(rowValues[14]).trim()));
                 stockSnapshot.getBidQueue().add(bid2);
-                BidAsk ask2 = new BidAsk();
+                BidAsk ask2 = null;
+                if(stockSnapshot.getAskQueue().size() == 1){
+                    ask2 = new BidAsk();
+                }else{
+                    ask2 = (BidAsk)stockSnapshot.getAskQueue().get(1);
+                }
                 ask2.setPrice(Double.parseDouble(String.valueOf(rowValues[18]).trim()));
                 ask2.setVolume(getVolume(String.valueOf(rowValues[19]).trim()));
                 stockSnapshot.getAskQueue().add(0, ask2);
-                BidAsk bid3 = new BidAsk();
+                BidAsk bid3 = null;
+                if(stockSnapshot.getBidQueue().size() == 2){
+                    bid3 = new BidAsk();
+                }else{
+                    bid3 = (BidAsk)stockSnapshot.getBidQueue().get(2);
+                }
                 bid3.setPrice(Double.parseDouble(String.valueOf(rowValues[15]).trim()));
                 bid3.setVolume(getVolume(String.valueOf(rowValues[16]).trim()));
                 stockSnapshot.getBidQueue().add(bid3);
-                BidAsk ask3 = new BidAsk();
+                BidAsk ask3 = null;
+                if(stockSnapshot.getAskQueue().size() == 2){
+                    ask3 = new BidAsk();
+                }else{
+                    ask3 = (BidAsk)stockSnapshot.getAskQueue().get(2);
+                }
                 ask3.setPrice(Double.parseDouble(String.valueOf(rowValues[20]).trim()));
                 ask3.setVolume(getVolume(String.valueOf(rowValues[21]).trim()));
                 stockSnapshot.getAskQueue().add(0, ask3);
-                BidAsk bid4 = new BidAsk();
+                BidAsk bid4 = null;
+                if(stockSnapshot.getBidQueue().size() == 3){
+                    bid4 = new BidAsk();
+                }else{
+                    bid4 = (BidAsk)stockSnapshot.getBidQueue().get(3);
+                }
                 bid4.setPrice(Double.parseDouble(String.valueOf(rowValues[22]).trim()));
                 bid4.setVolume(getVolume(String.valueOf(rowValues[23]).trim()));
                 stockSnapshot.getBidQueue().add(bid4);
-                BidAsk ask4 = new BidAsk();
+                BidAsk ask4 = null;
+                if(stockSnapshot.getAskQueue().size() == 3){
+                    ask4 = new BidAsk();
+                }else{
+                    ask4 = (BidAsk)stockSnapshot.getAskQueue().get(3);
+                }
                 ask4.setPrice(Double.parseDouble(String.valueOf(rowValues[26]).trim()));
                 ask4.setVolume(getVolume(String.valueOf(rowValues[27]).trim()));
-                stockSnapshot.getAskQueue().add(0, ask4);
-                BidAsk bid5 = new BidAsk();
+                stockSnapshot.getAskQueue().add(0, ask4);                
+                BidAsk bid5 = null;
+                if(stockSnapshot.getBidQueue().size() == 4){
+                    bid5 = new BidAsk();
+                }else{
+                    bid5 = (BidAsk)stockSnapshot.getBidQueue().get(4);
+                }
                 bid5.setPrice(Double.parseDouble(String.valueOf(rowValues[24]).trim()));
                 bid5.setVolume(getVolume(String.valueOf(rowValues[25]).trim()));
                 stockSnapshot.getBidQueue().add(bid5);
-                BidAsk ask5 = new BidAsk();
+                BidAsk ask5 = null;
+                if(stockSnapshot.getAskQueue().size() == 4){
+                    ask5 = new BidAsk();
+                }else{
+                    ask5 = (BidAsk)stockSnapshot.getAskQueue().get(4);
+                }
                 ask5.setPrice(Double.parseDouble(String.valueOf(rowValues[28]).trim()));
                 ask5.setVolume(getVolume(String.valueOf(rowValues[29]).trim()));
                 stockSnapshot.getAskQueue().add(0, ask5);
-
+                */
+               
                 StockSnapshot hSnapshot = (StockSnapshot) ServerContext.getTempSnapshotMap().get(symbol);//品种为健值的基本数据体
                 /**
                  * 按照品种，进行分别操作：
@@ -252,14 +314,14 @@ public class ReadDBFSHThread extends Thread {
                  * 2.存在，如果不相同，进行更新临时，添加实时队列
                  */
                 if (hSnapshot == null) {
-                    ServerContext.getRtSnapshotQueue().add(stockSnapshot.clone());
+                   // ServerContext.getRtSnapshotQueue().add(stockSnapshot.clone());
                     ServerContext.getSnapshotMap().put(stockSnapshot.symbol, stockSnapshot);
                     ServerContext.getTempSnapshotMap().put(stockSnapshot.symbol, stockSnapshot);
                 } else {
                     if (!hSnapshot.equalsTemp(stockSnapshot)) {
                         hSnapshot.updateTempSnapshot(stockSnapshot);
                         hSnapshot.updateSnapshot(hSnapshot);
-                        ServerContext.getRtSnapshotQueue().add(stockSnapshot);
+                      //  ServerContext.getRtSnapshotQueue().add(stockSnapshot);
                     }
                 }
             }
@@ -268,6 +330,7 @@ public class ReadDBFSHThread extends Thread {
             e.printStackTrace();
         } finally {
             temp = null;
+            System.gc();
         }
     }
 

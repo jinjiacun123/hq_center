@@ -139,7 +139,7 @@ public class LSortServlet extends HttpServlet{
                 json.put("symbol",  list.get(i).getKey().toString().replace("SH", "").replace("SZ",""));
                 //json.put("symbol",  list.get(i).getKey().toString());                
                 json.put("name", stockSnapshot.cnName);      
-                
+                /*
                 json.put("bid1price", stockSnapshot.bidQueue.get(0).price);
                 json.put("bid1volume", stockSnapshot.bidQueue.get(0).volume);
                 json.put("bid2price", stockSnapshot.bidQueue.get(1).price);
@@ -160,7 +160,7 @@ public class LSortServlet extends HttpServlet{
                 json.put("ask4volume", stockSnapshot.askQueue.get(1).volume);
                 json.put("ask5price", stockSnapshot.askQueue.get(0).price);
                 json.put("ask5volume", stockSnapshot.askQueue.get(0).volume);
-                
+                */
                 json.put("change", StringUtil.formatNumber(stockSnapshot.change, decimal));
                
                 json.put("changerate", StringUtil.formatNumber(stockSnapshot.changeRate, 2)+'%');
@@ -200,6 +200,8 @@ public class LSortServlet extends HttpServlet{
             }
         } finally {
             out.close();
+            list.clear();
+            myMap = null;
         }
     }
 

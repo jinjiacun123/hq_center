@@ -40,9 +40,9 @@ public class ExchangeOpenDao {
             int date = Integer.parseInt(DateUtil.formatDate(null, "yyyyMMdd"));
             int time = Integer.parseInt(DateUtil.formatDate(null, "HHmmss"));
             System.out.println("交易所开盘" + exchangeData.code + "||" + exchangeData.cnName + "||" + exchangeData.tradeDate + "||" + date + "||" + time);
-            doMinuteClear();
+            //doMinuteClear();
             doSnapshotClear();
-            doAuthorize();
+            //doAuthorize();
             
             exchangeData.isTrade = true;
             exchangeData.tradeDate = date;
@@ -95,6 +95,16 @@ public class ExchangeOpenDao {
                 ServerContext.getSnapshotMap().remove(masterData.symbol);
             }
         }
+    }
+    
+    //清除排序字典
+    public void doSortMapClear(){
+        
+    }
+    
+    //清楚股票数据集
+    public void doStockClear(){
+        
     }
     
     private void doFinanceUpdate(){

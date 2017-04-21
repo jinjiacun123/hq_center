@@ -43,11 +43,15 @@ public class TestServlet extends HttpServlet {
         String market = request.getParameter("market");
         String column = request.getParameter("column");
         
+        String[] Market = market.split(",");
+        
         Map<String,Double> myMap = new HashMap<String,Double>();
         List<Map.Entry<String, Double>> list = null;
-        PrintWriter out = response.getWriter();   
-        
-        myMap.putAll(ServerContext.getMarketList().get(market+"_"+column));
+        PrintWriter out = response.getWriter(); 
+        for(int i=0; i< Market.length; i++){
+            myMap.putAll(ServerContext.getMarketList().get(Market[i]+"_"+column));
+        }
+        //myMap.putAll(ServerContext.getMarketList().get(market+"_"+column));
         list = Help.sort_by_double_ex(myMap);
         for(int i = 0; i < list.size(); i++){
             out.println(list.get(i).getKey()+":"+list.get(i).getValue());

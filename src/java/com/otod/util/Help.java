@@ -10,6 +10,7 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -178,14 +179,22 @@ public class Help {
     //统计上涨，下跌，平盘总数
     public static void countPlat(String symbol, String market, Double rate){
         Map<String, Map<String, String>> countMap = ServerContext.getCountMap();
-        String[] marketList = {
+         String[] marketList = {
+           "SH_A",
            "SZ_A",
            "SZ_MIDDLE",
            "SZ_ACCOUNT"
-        }; 
+        };
+         List<String> list = Arrays.asList(marketList);
+         if(!list.contains(market)){
+             return;
+         }
         //目标清除
-        countMap.get(market + "_"+ "UP_PAN").remove(symbol);
-        countMap.get(market + "_"+ "FLAT_PAN").remove(symbol);
+        if(countMap.get(market + "_"+ "UP_PAN") != null)
+            countMap.get(market + "_"+ "UP_PAN").remove(symbol);
+        if(countMap.get(market + "_"+ "FLAT_PAN") != null)
+            countMap.get(market + "_"+ "FLAT_PAN").remove(symbol);
+        if(countMap.get(market + "_"+ "DOWN_PAN") != null)
         countMap.get(market + "_"+ "DOWN_PAN").remove(symbol);
         
         //加入列表
