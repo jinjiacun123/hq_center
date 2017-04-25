@@ -49,6 +49,7 @@ public class LSortServlet extends HttpServlet{
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        long begin = System.currentTimeMillis();
         response.setContentType("text/json;charset=UTF-8");
         String symbol = request.getParameter("symbol");
         String number = request.getParameter("number");
@@ -102,7 +103,8 @@ public class LSortServlet extends HttpServlet{
         //1-成交额,2-涨跌幅,3-振幅,4-换手率,5-市盈率
         if(Markets != null){
             for(int i=0; i < Markets.length; i++){
-                myMap.putAll(ServerContext.getMarketList().get(Markets[i]+"_"+column));
+                if(ServerContext.getMarketList().get(Markets[i]+"_"+column) != null && Markets[i] != null)
+                    myMap.putAll(ServerContext.getMarketList().get(Markets[i]+"_"+column));
             }
         }
         iWay = Integer.parseInt(way);
@@ -190,7 +192,7 @@ public class LSortServlet extends HttpServlet{
         JSONObject root = new JSONObject();
         root.put("data", array);
         root.put("record_count", list.size());
-          valueBuffer.append(root.toString()); 
+        valueBuffer.append(root.toString()); 
 
         try {
             if (callback != null) {
@@ -203,6 +205,9 @@ public class LSortServlet extends HttpServlet{
             list.clear();
             myMap = null;
         }
+        
+        long end = System.currentTimeMillis();
+        System.out.println("interface:LSort,use_time:"+(end-begin));
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

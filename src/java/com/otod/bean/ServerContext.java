@@ -104,14 +104,12 @@ public class ServerContext {
                 String[] marketName = marketList[i].split("-");
                 if(marketName.length > 0)
                 {
-                    for(int j=0; j < marketName.length; j++){
-                        put("SH_" + marketName[j]+"_SORT_M", new HashMap<String, Double>());
-                        put("SH_" + marketName[j]+"_SORT_UPDOWN", new HashMap<String, Double>());
-                        put("SH_" + marketName[j]+"_SORT_RAISE", new HashMap<String, Double>());
-                        put("SH_" + marketName[j]+"_SORT_AMPLITUDE", new HashMap<String, Double>());
-                        put("SH_" + marketName[j]+"_SORT_TURNOVERRATE", new HashMap<String, Double>());
-                        put("SH_" + marketName[j]+"_SORT_EARMING", new HashMap<String, Double>());
-                    }
+                        put("SH_" + marketName[0]+"_SORT_M", new HashMap<String, Double>());
+                        put("SH_" + marketName[0]+"_SORT_UPDOWN", new HashMap<String, Double>());
+                        put("SH_" + marketName[0]+"_SORT_RAISE", new HashMap<String, Double>());
+                        put("SH_" + marketName[0]+"_SORT_AMPLITUDE", new HashMap<String, Double>());
+                        put("SH_" + marketName[0]+"_SORT_TURNOVERRATE", new HashMap<String, Double>());
+                        put("SH_" + marketName[0]+"_SORT_EARMING", new HashMap<String, Double>());
                 }
             }
         }        

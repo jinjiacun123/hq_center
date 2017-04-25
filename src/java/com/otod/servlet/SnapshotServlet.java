@@ -56,6 +56,7 @@ public class SnapshotServlet extends HttpServlet {
                 JSONObject json = new JSONObject();
                 json.put("symbol", masterData.symbol);
                 json.put("name", stockSnapshot.cnName);
+                /*
                 json.put("bid1price", stockSnapshot.bidQueue.get(0).price);
                 json.put("bid1volume", stockSnapshot.bidQueue.get(0).volume);
                 json.put("bid2price", stockSnapshot.bidQueue.get(1).price);
@@ -76,6 +77,7 @@ public class SnapshotServlet extends HttpServlet {
                 json.put("ask4volume", stockSnapshot.askQueue.get(1).volume);
                 json.put("ask5price", stockSnapshot.askQueue.get(0).price);
                 json.put("ask5volume", stockSnapshot.askQueue.get(0).volume);
+                */
                 json.put("change", StringUtil.formatNumber(stockSnapshot.change, decimal));
                 json.put("changerate", StringUtil.formatNumber(stockSnapshot.changeRate, 2) + "%");
                 json.put("open", stockSnapshot.getOpenPrice());
@@ -90,7 +92,6 @@ public class SnapshotServlet extends HttpServlet {
                 json.put("time", stockSnapshot.getQuoteTime());
                 array.add(json);
             }
-
         }
         valueBuffer.append(array.toString());
 

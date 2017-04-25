@@ -101,6 +101,7 @@ public class ReadDBFSZThread extends Thread {
             double change_rate, change;
             double ltag;
             double earning;
+            double open;
             DecimalFormat df = new DecimalFormat("#.00000"); 
             
             Map<String,Map<String, Double>> marketList = ServerContext.getMarketList();
@@ -157,9 +158,12 @@ public class ReadDBFSZThread extends Thread {
                 stockSnapshot.setpClose(Double.parseDouble(String.valueOf(rowValues[2]).trim()));
                 stockSnapshot.setVolume(getVolume(String.valueOf(rowValues[5]).trim()));
                 stockSnapshot.setTurnover(Double.parseDouble(String.valueOf(rowValues[6]).trim()));
+                open = Double.parseDouble(String.valueOf(rowValues[3]).trim());
                 
                 //new add
-                if((!marketName.equals("")&&(!symbol.startsWith("SZ000000")))){
+                if((!marketName.equals("")
+                   &&(!symbol.startsWith("SZ000000")))
+                   &&(open != 0)){
                     try{
                         listSortMMap.put(symbol, Double.parseDouble(String.valueOf(rowValues[6]).trim()));                        
                         pClose = Double.parseDouble(String.valueOf(rowValues[2]).trim());

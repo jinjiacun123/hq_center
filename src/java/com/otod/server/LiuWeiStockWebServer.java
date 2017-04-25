@@ -395,7 +395,10 @@ public class LiuWeiStockWebServer extends Thread {
                 }
                 MasterData masterData = new MasterData();
                 String qz = symbol.substring(0, 1);
-                if (qz.equals("3") || qz.equals("0") || qz.equals("3") || qz.equals("2")) {
+                if (qz.equals("0") 
+                 || qz.equals("1")
+                 || qz.equals("2") 
+                 || qz.equals("3")) {
                     masterData.symbol = "SZ" + String.valueOf(rowValues[0]).trim();
                     masterData.cnName = String.valueOf(rowValues[1]).trim();
                     masterData.exchCode = "SZ";
