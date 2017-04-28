@@ -78,18 +78,18 @@ public class SnapshotServlet extends HttpServlet {
                 json.put("ask5price", stockSnapshot.askQueue.get(0).price);
                 json.put("ask5volume", stockSnapshot.askQueue.get(0).volume);
                 */
-                json.put("change", StringUtil.formatNumber(stockSnapshot.change, decimal));
+                json.put("change",     StringUtil.formatNumber(stockSnapshot.change, decimal));
                 json.put("changerate", StringUtil.formatNumber(stockSnapshot.changeRate, 2) + "%");
-                json.put("open", stockSnapshot.getOpenPrice());
-                json.put("high", stockSnapshot.getHighPrice());
-                json.put("low", stockSnapshot.getLowPrice());
-                json.put("close", stockSnapshot.getLastPrice());
-                json.put("pclose", stockSnapshot.pClose);
-                json.put("volume", StringUtil.formatNumber(stockSnapshot.getVolume(),0));
-                json.put("turnover", StringUtil.formatNumber(stockSnapshot.getTurnover(),0));
-                json.put("turnrate", StringUtil.formatNumber(stockSnapshot.getTurnoverRate(), 3));
-                json.put("earning", StringUtil.formatNumber(stockSnapshot.getEarming(), 3));
-                json.put("time", stockSnapshot.getQuoteTime());
+                json.put("open",       StringUtil.formatNumber(stockSnapshot.getOpenPrice(),2));
+                json.put("high",       StringUtil.formatNumber(stockSnapshot.getHighPrice(),2));
+                json.put("low",        StringUtil.formatNumber(stockSnapshot.getLowPrice(),2));
+                json.put("close",      StringUtil.formatNumber(stockSnapshot.getLastPrice(),2));
+                json.put("pclose",     StringUtil.formatNumber(stockSnapshot.pClose, 2));
+                json.put("volume",     StringUtil.formatNumber(stockSnapshot.getVolume(),0));
+                json.put("turnover",   StringUtil.formatNumber(stockSnapshot.getTurnover(),0));
+                json.put("turnrate",   StringUtil.formatNumber(stockSnapshot.getTurnoverRate(), 3));
+                json.put("earning",    StringUtil.formatNumber(stockSnapshot.getEarming(), 3));
+                json.put("time",       stockSnapshot.getQuoteTime());
                 array.add(json);
             }
         }

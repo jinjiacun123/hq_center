@@ -110,6 +110,7 @@ public class ReadDBFSHThread extends Thread {
             double open;
             DecimalFormat df = new DecimalFormat("#.00000");  
             
+            ConcurrentHashMap<String,String> codeMarketMap = ServerContext.getCodeMarketMap();
             Map<String,Map<String, Double>> marketList = ServerContext.getMarketList();
             String marketName = "";
             
@@ -137,7 +138,16 @@ public class ReadDBFSHThread extends Thread {
                 
                 //市场查找
                 symbol = "SH" + symbol;
-                marketName = Help.findMarketByCode(Config.TYPE_SH, symbol);
+                MasterData masterData = ServerContext.getMasterMap().get(symbol);
+                if (masterData == null) {
+                    continue;
+                }
+                if(codeMarketMap.containsKey(symbol)){
+                    marketName = codeMarketMap.get(symbol);
+                }else{
+                    marketName = Help.findMarketByCode(Config.TYPE_SH, symbol);
+                    codeMarketMap.put(symbol, marketName);
+                }
                 if(marketName != ""){
                      //获取市场对应排序
                     listSortMMap            = marketList.get(marketName+"_SORT_M");//成交额
@@ -148,14 +158,12 @@ public class ReadDBFSHThread extends Thread {
                     listSortEarmingMap      = marketList.get(marketName+"_SORT_EARMING");//市盈率
                 }
                 
-                MasterData masterData = ServerContext.getMasterMap().get(symbol);
-                if (masterData == null) {
-                    continue;
+                StockSnapshot tmpStockSnapshot = null;
+                StockSnapshot stockSnapshot = (StockSnapshot) ServerContext.getSnapshotMap().get(symbol);
+                if(stockSnapshot == null){
+                    stockSnapshot = new StockSnapshot();
                 }
                 
-                StockSnapshot stockSnapshot = (StockSnapshot) ServerContext.getSnapshotMap().get(symbol);
-                if(stockSnapshot == null)
-                    stockSnapshot = new StockSnapshot();
                 stockSnapshot.setSymbol(symbol);
                 stockSnapshot.setCnName(String.valueOf(rowValues[1]).trim());
                 stockSnapshot.setQuoteDate(date);

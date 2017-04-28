@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -104,6 +105,7 @@ public class ReadDBFSZThread extends Thread {
             double open;
             DecimalFormat df = new DecimalFormat("#.00000"); 
             
+            ConcurrentHashMap<String,String> codeMarketMap = ServerContext.getCodeMarketMap();
             Map<String,Map<String, Double>> marketList = ServerContext.getMarketList();
             String marketName = "";
             
@@ -125,10 +127,17 @@ public class ReadDBFSZThread extends Thread {
                 if (symbol.equals("") || symbol.length() < 6) {
                     continue;
                 }
-                symbol = "SZ" + symbol;     
-                
-                marketName = Help.findMarketByCode(Config.TYPE_SZ, symbol);
-               
+                symbol = "SZ" + symbol; 
+                 MasterData masterData = ServerContext.getMasterMap().get(symbol);
+                if (masterData == null) {
+                    continue;
+                }
+                if(codeMarketMap.containsKey(symbol)){
+                    marketName = codeMarketMap.get(symbol);
+                }else{
+                    marketName = Help.findMarketByCode(Config.TYPE_SH, symbol);
+                    codeMarketMap.put(symbol, marketName);
+                }             
                 if(marketName != ""){
                      //获取市场对应排序
                     listSortMMap            = marketList.get(marketName+"_SORT_M");//成交额
@@ -139,10 +148,7 @@ public class ReadDBFSZThread extends Thread {
                     listSortEarmingMap      = marketList.get(marketName+"_SORT_EARMING");//市盈率
                 }
                              
-                MasterData masterData = ServerContext.getMasterMap().get(symbol);
-                if (masterData == null) {
-                    continue;
-                }
+               
                 StockSnapshot stockSnapshot =(StockSnapshot) ServerContext.getSnapshotMap().get(symbol);
                 if(stockSnapshot == null){
                     stockSnapshot = new StockSnapshot();

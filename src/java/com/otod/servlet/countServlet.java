@@ -8,6 +8,8 @@ package com.otod.servlet;
 import com.otod.bean.ServerContext;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -95,7 +97,8 @@ public class countServlet extends HttpServlet {
             out.close();
         }
         long end = System.currentTimeMillis();
-        System.out.println("interface:count,use_time:"+(end-begin));
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式        
+        System.out.println(df.format(new Date())+":interface:count,use_time:"+(end-begin));
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

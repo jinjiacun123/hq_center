@@ -20,6 +20,7 @@ import com.otod.util.Help;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -54,11 +55,11 @@ public class LSortServlet extends HttpServlet{
         String symbol = request.getParameter("symbol");
         String number = request.getParameter("number");
         String from = request.getParameter("from");
-        String column = request.getParameter("column");//SORT_M-³É½»¶î,SORT_RAISE-ÕÇµø·ù,SORT_AMPLITUDE-Õñ·ù,SORT_TURNOVERRATE-»»ÊÖÂÊ,SORT_EARMING-ÊĞÓ¯ÂÊ
+        String column = request.getParameter("column");//SORT_M-Â³Ã‰Â½Â»Â¶Ã®,SORT_RAISE-Ã•Ã‡ÂµÃ¸Â·Ã¹,SORT_AMPLITUDE-Ã•Ã±Â·Ã¹,SORT_TURNOVERRATE-Â»Â»ÃŠÃ–Ã‚ÃŠ,SORT_EARMING-ÃŠÃÃ“Â¯Ã‚ÃŠ
         String index  = request.getParameter("index");
-        String way    = request.getParameter("way");//0-µ¹Ğò,1-ÕıĞò
+        String way    = request.getParameter("way");//0-ÂµÂ¹ÃÃ²,1-Ã•Ã½ÃÃ²
         String callback = request.getParameter("callback");
-        String market   = request.getParameter("market");//0-ÉîÛÚa¹ÉÆ±,1-ÉîÛÚb¹ÉÆ±,2-ÉÏº£a¹ÉÆ±,3-ÉÏº£b¹ÉÆ±
+        String market   = request.getParameter("market");//0-Ã‰Ã®Ã›ÃšaÂ¹Ã‰Ã†Â±,1-Ã‰Ã®Ã›ÃšbÂ¹Ã‰Ã†Â±,2-Ã‰ÃÂºÂ£aÂ¹Ã‰Ã†Â±,3-Ã‰ÃÂºÂ£bÂ¹Ã‰Ã†Â±
         
         /*
         if (symbol == null || symbol.equals("")) {
@@ -100,7 +101,7 @@ public class LSortServlet extends HttpServlet{
         Map<String,Double> myMap = new HashMap<String, Double>();
         List<Map.Entry<String, Double>> list = null;
   
-        //1-³É½»¶î,2-ÕÇµø·ù,3-Õñ·ù,4-»»ÊÖÂÊ,5-ÊĞÓ¯ÂÊ
+        //1-Â³Ã‰Â½Â»Â¶Ã®,2-Ã•Ã‡ÂµÃ¸Â·Ã¹,3-Ã•Ã±Â·Ã¹,4-Â»Â»ÃŠÃ–Ã‚ÃŠ,5-ÃŠÃÃ“Â¯Ã‚ÃŠ
         if(Markets != null){
             for(int i=0; i < Markets.length; i++){
                 if(ServerContext.getMarketList().get(Markets[i]+"_"+column) != null && Markets[i] != null)
@@ -167,11 +168,11 @@ public class LSortServlet extends HttpServlet{
                
                 json.put("changerate", StringUtil.formatNumber(stockSnapshot.changeRate, 2)+'%');
                 
-                json.put("open", stockSnapshot.getOpenPrice());
-                json.put("high", stockSnapshot.getHighPrice());
-                json.put("low", stockSnapshot.getLowPrice());
-                json.put("close", stockSnapshot.getLastPrice());
-                json.put("pclose", stockSnapshot.pClose);
+                json.put("open", StringUtil.formatNumber(stockSnapshot.getOpenPrice(),2));
+                json.put("high", StringUtil.formatNumber(stockSnapshot.getHighPrice(),2));
+                json.put("low",  StringUtil.formatNumber(stockSnapshot.getLowPrice(),2));
+                json.put("close", StringUtil.formatNumber(stockSnapshot.getLastPrice(),2));
+                json.put("pclose", StringUtil.formatNumber(stockSnapshot.pClose,2));
                 json.put("upstopprice", StringUtil.formatNumber(upDownStopPrice.getUpStopPrice(), 2));
                 json.put("downstopprice", StringUtil.formatNumber(upDownStopPrice.getDownStopPrice(), 2));
                 json.put("volume", StringUtil.formatNumber(stockSnapshot.getVolume(),0));
@@ -207,7 +208,9 @@ public class LSortServlet extends HttpServlet{
         }
         
         long end = System.currentTimeMillis();
-        System.out.println("interface:LSort,use_time:"+(end-begin));
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//è®¾ç½®æ—¥æœŸæ ¼å¼
+        //System.out.println(df.format(new Date()));// new Date()ä¸ºè·å–å½“å‰ç³»ç»Ÿæ—¶é—´
+        System.out.println(df.format(new Date())+":interface:LSort,use_time:"+(end-begin));
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

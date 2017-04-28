@@ -58,6 +58,8 @@ public class ServerContext {
     private static LinkedBlockingQueue<Snapshot> quoteToDBQueue = new LinkedBlockingQueue<Snapshot>();
     private static boolean authorizeFlag = true;
     private static ConcurrentHashMap<String, List<StockDividend>> stockDividendMap = new ConcurrentHashMap<String, List<StockDividend>>();
+    //品种市场
+    private static ConcurrentHashMap<String,String> codeMarketMap = new ConcurrentHashMap<String,String>();
     private static ConcurrentHashMap<String, String> raiseStopMap = new ConcurrentHashMap<String, String>();//涨停
     private static ConcurrentHashMap<String, String> fallStopMap  = new ConcurrentHashMap<String, String>();//跌停
     //上涨，下跌，平盘
@@ -384,5 +386,13 @@ public class ServerContext {
     
     public static void setFinance(Map<String, FinanceData> financeMap){
         ServerContext.financeMap = financeMap;
+    }
+    
+    public static ConcurrentHashMap<String,String> getCodeMarketMap(){
+        return codeMarketMap;
+    }
+    
+    public static void setCodeMarketMap(ConcurrentHashMap<String,String> codeMarketMap){
+        ServerContext.codeMarketMap = codeMarketMap;
     }
 }
