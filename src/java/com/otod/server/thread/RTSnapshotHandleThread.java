@@ -56,8 +56,8 @@ public class RTSnapshotHandleThread extends Thread {
                     hSnapshot = snapshot;
                     hSnapshot.updateSnapshot(snapshot);
                     ServerContext.getSnapshotMap().put(hSnapshot.getSymbol(), hSnapshot);
-//                    doTick(snapshot.getSymbol());
-//                    doCalMinute(snapshot.getSymbol());
+                    //doTick(snapshot.getSymbol());
+                    doCalMinute(snapshot.getSymbol());
 
 //                    ServerContext.getQuoteToDBQueue().add(snapshot);
 
@@ -80,7 +80,7 @@ public class RTSnapshotHandleThread extends Thread {
                         continue;
                     }
 */
-//                    doTick(snapshot.getSymbol());
+                    doTick(snapshot.getSymbol());
                     hSnapshot.updateSnapshot(snapshot);
 //                    ServerContext.getQuoteToDBQueue().add(hSnapshot);
                     if (snapshot.getLastPrice() == 0) {
@@ -113,19 +113,39 @@ public class RTSnapshotHandleThread extends Thread {
     }
 
     private void doTick(String symbol) {
-        ForexSnapshot snapshot = (ForexSnapshot) ServerContext.getSnapshotMap().get(symbol);
+        //ForexSnapshot snapshot = (ForexSnapshot) ServerContext.getSnapshotMap().get(symbol);
+        Snapshot snapshot = ServerContext.getSnapshotMap().get(symbol);
         TickQueue tickQueue = ServerContext.getTickMap().get(symbol);
-        if (tickQueue == null) {
+        if (tickQueue == null) {//分比保存品种对应昨收
             tickQueue = new TickQueue();
             tickQueue.setSymbol(snapshot.getSymbol());
             tickQueue.setpClose(snapshot.getpClose());
             ServerContext.getTickMap().put(tickQueue.getSymbol(), tickQueue);
         }
-        TickData tickData = new TickData();
+        TickData tickData = new TickData();//保存当前分比数据(询价,最新价，成交量)
+        tickData.setDate(snapshot.getQuoteDate());
         tickData.setTime(snapshot.getQuoteTime());
         tickData.setPrice(snapshot.getLastPrice());
-        tickData.setVolume(snapshot.getLastVolume());
+        tickData.setVolume(snapshot.getVolume());
+        tickData.setTurnover(snapshot.getTurnover());
+        tickData.setLastPrice(snapshot.getLastPrice());
+        tickData.setAsk1Price(snapshot.getAsk1Price());
+        tickData.setAsk1Volume(snapshot.getAsk1Volume());
+        tickData.setBid1Price(snapshot.getBid1Price());
+        tickData.setBid1Volume(snapshot.getBid1Volume());
+        tickData.setHighPrice(snapshot.getHighPrice());
+        tickData.setOpenPrice(snapshot.getOpenPrice());
+        tickData.setLowPrice(snapshot.getLowPrice());
+        tickData.setpClose(snapshot.getpClose());
+        tickData.setSymbol(snapshot.getSymbol());
+        tickData.setCnName(snapshot.cnName);
+        
         tickQueue.getQueue().add(tickData);
+        if (tickData.getDataType() == ApplicationConstant.MEMORY_DATA) {
+                tickData.setDataType(ApplicationConstant.DB_DATA);
+                tickData.setDbOperType(ApplicationConstant.DB_SAVE);
+                ServerContext.getChartToDBQueue().add(tickData.clone());
+        }
         while (tickQueue.getQueue().size() > 20) {
             tickQueue.getQueue().remove(0);
         }

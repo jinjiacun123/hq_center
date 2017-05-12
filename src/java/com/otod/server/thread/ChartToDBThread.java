@@ -7,6 +7,8 @@ package com.otod.server.thread;
 import com.otod.bean.ServerContext;
 import com.otod.bean.quote.kline.KLineData;
 import com.otod.bean.quote.minute.MinuteData;
+import com.otod.bean.quote.tick.TickData;
+import com.otod.dao.TickDao;
 import com.otod.dao.DayDao;
 import com.otod.dao.Minute15Dao;
 import com.otod.dao.Minute1Dao;
@@ -48,16 +50,37 @@ public class ChartToDBThread extends Thread {
                 // 如果此对象为K线行情对象
                 if (data instanceof KLineData) {
                     // k线数据库处理
-                    doKLine((KLineData) data);
+                    //doKLine((KLineData) data);
                 } else if (data instanceof MinuteData) {// 如果此对象为分时行情对象
                     // 分时数据数库处理
                     doMinute((MinuteData) data);
+                }else if(data instanceof TickData){
+                    doTick((TickData) data);
                 }
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
+        }
+    }
+    
+    public void doTick(TickData tickData){
+         Connector connector = null;
+        try {
+            connector = new MysqlConnector();
+            // 分时行情表数据库操作对象
+            TickDao tickDao = new TickDao();
+            tickDao.setConnector(connector);
+
+            if (tickData.getDbOperType() == ApplicationConstant.DB_SAVE) {
+                // 如果此分时行情的数据库操作标识为”保存“，则向分时行情表中插入此数据
+                tickDao.save(tickData);
+            }
+        } finally {
+            if (connector != null) {
+                connector.close();
+            }
         }
     }
 

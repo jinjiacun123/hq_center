@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Administrator
  */
 public class ReadDBFSHThread extends Thread {
-
+    public int index = 0;
     @Override
     public void run() {
         while (true) {
@@ -158,10 +158,17 @@ public class ReadDBFSHThread extends Thread {
                     listSortEarmingMap      = marketList.get(marketName+"_SORT_EARMING");//市盈率
                 }
                 
+                StockSnapshot stockSnapshot = new StockSnapshot();
+                /*
                 StockSnapshot tmpStockSnapshot = null;
                 StockSnapshot stockSnapshot = (StockSnapshot) ServerContext.getSnapshotMap().get(symbol);
                 if(stockSnapshot == null){
                     stockSnapshot = new StockSnapshot();
+                }
+                */
+                
+                if(symbol.equals("SH600000")){
+                    System.out.println(symbol);
                 }
                 
                 stockSnapshot.setSymbol(symbol);
@@ -171,7 +178,7 @@ public class ReadDBFSHThread extends Thread {
                 stockSnapshot.setOpenPrice(Double.parseDouble(String.valueOf(rowValues[3]).trim()));
                 stockSnapshot.setHighPrice(Double.parseDouble(String.valueOf(rowValues[5]).trim()));
                 stockSnapshot.setLowPrice(Double.parseDouble(String.valueOf(rowValues[6]).trim()));
-                stockSnapshot.setLastPrice(Double.parseDouble(String.valueOf(rowValues[7]).trim()));//+new Random().nextInt(10) + 1
+                stockSnapshot.setLastPrice(Double.parseDouble(String.valueOf(rowValues[7]).trim())+ (index ++));//+new Random().nextInt(10) + 1
                 stockSnapshot.setpClose(Double.parseDouble(String.valueOf(rowValues[2]).trim()));
                 stockSnapshot.setVolume(getVolume(String.valueOf(rowValues[10]).trim()));
                 stockSnapshot.setTurnover(Double.parseDouble(String.valueOf(rowValues[4]).trim()));
@@ -324,14 +331,14 @@ public class ReadDBFSHThread extends Thread {
                  * 2.存在，如果不相同，进行更新临时，添加实时队列
                  */
                 if (hSnapshot == null) {
-                   // ServerContext.getRtSnapshotQueue().add(stockSnapshot.clone());
+                    ServerContext.getRtSnapshotQueue().add(stockSnapshot.clone());
                     ServerContext.getSnapshotMap().put(stockSnapshot.symbol, stockSnapshot);
                     ServerContext.getTempSnapshotMap().put(stockSnapshot.symbol, stockSnapshot);
                 } else {
                     if (!hSnapshot.equalsTemp(stockSnapshot)) {
                         hSnapshot.updateTempSnapshot(stockSnapshot);
                         hSnapshot.updateSnapshot(hSnapshot);
-                      //  ServerContext.getRtSnapshotQueue().add(stockSnapshot);
+                        ServerContext.getRtSnapshotQueue().add(stockSnapshot);
                     }
                 }
             }

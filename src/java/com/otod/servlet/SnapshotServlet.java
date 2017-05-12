@@ -80,11 +80,11 @@ public class SnapshotServlet extends HttpServlet {
                 */
                 json.put("change",     StringUtil.formatNumber(stockSnapshot.change, decimal));
                 json.put("changerate", StringUtil.formatNumber(stockSnapshot.changeRate, 2) + "%");
-                json.put("open",       StringUtil.formatNumber(stockSnapshot.getOpenPrice(),2));
-                json.put("high",       StringUtil.formatNumber(stockSnapshot.getHighPrice(),2));
-                json.put("low",        StringUtil.formatNumber(stockSnapshot.getLowPrice(),2));
-                json.put("close",      StringUtil.formatNumber(stockSnapshot.getLastPrice(),2));
-                json.put("pclose",     StringUtil.formatNumber(stockSnapshot.pClose, 2));
+                json.put("open",       StringUtil.formatNumber(stockSnapshot.getOpenPrice(),3));
+                json.put("high",       StringUtil.formatNumber(stockSnapshot.getHighPrice(),3));
+                json.put("low",        StringUtil.formatNumber(stockSnapshot.getLowPrice(),3));
+                json.put("close",      StringUtil.formatNumber(stockSnapshot.getLastPrice(),3));
+                json.put("pclose",     StringUtil.formatNumber(stockSnapshot.pClose, 3));
                 json.put("volume",     StringUtil.formatNumber(stockSnapshot.getVolume(),0));
                 json.put("turnover",   StringUtil.formatNumber(stockSnapshot.getTurnover(),0));
                 json.put("turnrate",   StringUtil.formatNumber(stockSnapshot.getTurnoverRate(), 3));

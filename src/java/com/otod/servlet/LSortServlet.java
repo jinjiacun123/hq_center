@@ -97,6 +97,9 @@ public class LSortServlet extends HttpServlet{
         
         int date = 0;        
         int decimal = 2;
+        if(market.equals("SH_B") || market.equals("SH_FOUND") || market.equals("SZ_FOUND")){
+            decimal = 3;
+        }
         int iWay = 0;
         Map<String,Double> myMap = new HashMap<String, Double>();
         List<Map.Entry<String, Double>> list = null;
@@ -168,17 +171,17 @@ public class LSortServlet extends HttpServlet{
                
                 json.put("changerate", StringUtil.formatNumber(stockSnapshot.changeRate, 2)+'%');
                 
-                json.put("open", StringUtil.formatNumber(stockSnapshot.getOpenPrice(),2));
-                json.put("high", StringUtil.formatNumber(stockSnapshot.getHighPrice(),2));
-                json.put("low",  StringUtil.formatNumber(stockSnapshot.getLowPrice(),2));
-                json.put("close", StringUtil.formatNumber(stockSnapshot.getLastPrice(),2));
-                json.put("pclose", StringUtil.formatNumber(stockSnapshot.pClose,2));
-                json.put("upstopprice", StringUtil.formatNumber(upDownStopPrice.getUpStopPrice(), 2));
-                json.put("downstopprice", StringUtil.formatNumber(upDownStopPrice.getDownStopPrice(), 2));
+                json.put("open", StringUtil.formatNumber(stockSnapshot.getOpenPrice(),decimal));
+                json.put("high", StringUtil.formatNumber(stockSnapshot.getHighPrice(),decimal));
+                json.put("low",  StringUtil.formatNumber(stockSnapshot.getLowPrice(),decimal));
+                json.put("close", StringUtil.formatNumber(stockSnapshot.getLastPrice(),decimal));
+                json.put("pclose", StringUtil.formatNumber(stockSnapshot.pClose,decimal));
+                json.put("upstopprice", StringUtil.formatNumber(upDownStopPrice.getUpStopPrice(), decimal));
+                json.put("downstopprice", StringUtil.formatNumber(upDownStopPrice.getDownStopPrice(), decimal));
                 json.put("volume", StringUtil.formatNumber(stockSnapshot.getVolume(),0));
                 json.put("turnover", StringUtil.formatNumber(stockSnapshot.getTurnover(),0));
-                json.put("turnrate", StringUtil.formatNumber(stockSnapshot.getTurnoverRate(), 2));
-                json.put("earning", StringUtil.formatNumber(stockSnapshot.getEarming(), 2));
+                json.put("turnrate", StringUtil.formatNumber(stockSnapshot.getTurnoverRate(), decimal));
+                json.put("earning", StringUtil.formatNumber(stockSnapshot.getEarming(), decimal));
                 json.put("time", stockSnapshot.getQuoteTime());
                
                 array.add(json);
