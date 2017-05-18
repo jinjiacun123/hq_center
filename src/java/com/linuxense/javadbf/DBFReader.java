@@ -174,13 +174,11 @@ public class DBFReader extends DBFBase {
         Object recordObjects[] = new Object[this.header.fieldArray.length];
 
         try {
-
             boolean isDeleted = false;
             do {
-
                 if (isDeleted) {
 
-                    dataInputStream.skip(this.header.recordLength - 1);
+//                    dataInputStream.skip(this.header.recordLength - 1);
                 }
 
                 int t_byte = dataInputStream.readByte();
@@ -190,6 +188,9 @@ public class DBFReader extends DBFBase {
 //				}
 
                 isDeleted = (t_byte == '*');
+                if(isDeleted){
+                    break;
+                }
             } while (isDeleted);
 
             for (int i = 0; i < this.header.fieldArray.length; i++) {

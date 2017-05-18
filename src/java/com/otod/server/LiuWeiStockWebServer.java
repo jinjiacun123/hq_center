@@ -126,12 +126,12 @@ public class LiuWeiStockWebServer extends Thread {
         /**
          * 处理节假日，每20秒触发一次
          */
-        //doSignalTimer();//singal trigger
+        doSignalTimer();//singal trigger
         /**
          * 处理分时及其k线同步数据库，没1分钟触发一次
          * 触发调度处理：按品种，批量同步数据库
          */
-        //doChartToDBTimer();//chart trigger
+        doChartToDBTimer();//chart trigger
     }
 
     private void doAuthorize() {
@@ -332,13 +332,11 @@ public class LiuWeiStockWebServer extends Thread {
                 }
                 MasterData masterData = new MasterData();
                 String qz = symbol.substring(0, 1);
-                /*
                 if (qz.equals("0") || qz.equals("1") || qz.equals("2") 
                  || qz.equals("5") || qz.equals("6") || qz.equals("7")
                  || qz.equals("9")) {
-                 */
                 //if(qz.equals("6")){
-                if(symbol.equals("600000")){
+                //if(symbol.equals("600000")){
                     masterData.symbol = "SH" + String.valueOf(rowValues[0]).trim();
                     masterData.cnName = String.valueOf(rowValues[1]).trim();
                     masterData.exchCode = "SH";

@@ -123,16 +123,20 @@ public class ReadDBFSHThread extends Thread {
             Map<String, FinanceData> financeMap  = ServerContext.getFinanceMap();
             FinanceData financeData = null;
             
-           // int i = 0;
+            
             while ((rowValues = reader.nextRecord()) != null) {
-             //   i++;
-               // if(i>2)
-               //     break;
                 if (rowValues[0] == null) {
                     continue;
                 }
-                String symbol = String.valueOf(rowValues[0]).trim();
+                String symbol = String.valueOf(rowValues[0]).trim();                
+                
                 if (symbol.equals("") || symbol.length() < 6) {
+                    continue;
+                }
+                
+                if(symbol.equals("000000")){
+                    date = (int) Double.parseDouble(String.valueOf(rowValues[5]).trim());
+                    time = Integer.parseInt(String.valueOf(rowValues[1]).trim());
                     continue;
                 }
                 
@@ -178,7 +182,7 @@ public class ReadDBFSHThread extends Thread {
                 stockSnapshot.setOpenPrice(Double.parseDouble(String.valueOf(rowValues[3]).trim()));
                 stockSnapshot.setHighPrice(Double.parseDouble(String.valueOf(rowValues[5]).trim()));
                 stockSnapshot.setLowPrice(Double.parseDouble(String.valueOf(rowValues[6]).trim()));
-                stockSnapshot.setLastPrice(Double.parseDouble(String.valueOf(rowValues[7]).trim())+ (index ++));//+new Random().nextInt(10) + 1
+                stockSnapshot.setLastPrice(Double.parseDouble(String.valueOf(rowValues[7]).trim()));//+new Random().nextInt(10) + 1
                 stockSnapshot.setpClose(Double.parseDouble(String.valueOf(rowValues[2]).trim()));
                 stockSnapshot.setVolume(getVolume(String.valueOf(rowValues[10]).trim()));
                 stockSnapshot.setTurnover(Double.parseDouble(String.valueOf(rowValues[4]).trim()));
