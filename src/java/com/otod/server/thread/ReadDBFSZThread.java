@@ -118,6 +118,13 @@ public class ReadDBFSZThread extends Thread {
             Map<String, FinanceData> financeMap  = ServerContext.getFinanceMap();
             FinanceData financeData = null;
             
+            //读取第一行
+            if((rowValues = reader.readHeadRecord()) != null){
+                    date = (int) Double.parseDouble(String.valueOf(rowValues[1]).trim());
+                    String str = rowValues[7].toString().trim().substring(0, 6);
+                    time = Integer.parseInt(str);
+            }
+            
             while ((rowValues = reader.nextRecord()) != null) {
                 if (rowValues[0] == null) {
                     continue;
@@ -127,6 +134,9 @@ public class ReadDBFSZThread extends Thread {
                 if (symbol.equals("") || symbol.length() < 6) {
                     continue;
                 }
+                
+                
+                
                 symbol = "SZ" + symbol; 
                  MasterData masterData = ServerContext.getMasterMap().get(symbol);
                 if (masterData == null) {
@@ -149,10 +159,13 @@ public class ReadDBFSZThread extends Thread {
                 }
                              
                
-                StockSnapshot stockSnapshot =(StockSnapshot) ServerContext.getSnapshotMap().get(symbol);
+                StockSnapshot stockSnapshot = new StockSnapshot();
+                /*
+                =(StockSnapshot) ServerContext.getSnapshotMap().get(symbol);
                 if(stockSnapshot == null){
                     stockSnapshot = new StockSnapshot();
                 }
+                */
                 stockSnapshot.setSymbol(symbol);
                 stockSnapshot.setCnName(String.valueOf(rowValues[1]).trim());
                 stockSnapshot.setQuoteDate(date);
@@ -309,14 +322,14 @@ public class ReadDBFSZThread extends Thread {
 
                 StockSnapshot hSnapshot = (StockSnapshot) ServerContext.getTempSnapshotMap().get(symbol);
                 if (hSnapshot == null) {
-             //       ServerContext.getRtSnapshotQueue().add(stockSnapshot.clone());
+                    ServerContext.getRtSnapshotQueue().add(stockSnapshot.clone());
                     ServerContext.getSnapshotMap().put(stockSnapshot.symbol, stockSnapshot);
                     ServerContext.getTempSnapshotMap().put(stockSnapshot.symbol, stockSnapshot);
                 } else {
                     if (!hSnapshot.equalsTemp(stockSnapshot)) {
                         hSnapshot.updateTempSnapshot(stockSnapshot);
                         hSnapshot.updateSnapshot(hSnapshot);
-                  //      ServerContext.getRtSnapshotQueue().add(stockSnapshot);
+                        ServerContext.getRtSnapshotQueue().add(stockSnapshot);
                     }
                 }
             }

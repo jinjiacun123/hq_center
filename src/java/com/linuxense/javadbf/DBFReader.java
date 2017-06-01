@@ -156,6 +156,52 @@ public class DBFReader extends DBFBase {
 
         return -1;
     }
+    
+   
+    public Object[] readHeadRecord()throws DBFException {
+
+        if (isClosed) {
+
+            throw new DBFException("Source is not open");
+        }
+
+        Object recordObjects[] = new Object[this.header.fieldArray.length];
+
+        try {
+            boolean isDeleted = false;
+            do {
+                if (isDeleted) {
+                    //dataInputStream.skip(this.header.recordLength - 1);
+                }
+
+                int t_byte = dataInputStream.readByte();
+//				if( t_byte == END_OF_DATA) {
+//
+//					return null;
+//				}
+
+                isDeleted = (t_byte == '*');
+                if(isDeleted){
+                    break;
+                }
+            } while (isDeleted);
+
+            for (int i = 0; i < this.header.fieldArray.length; i++) {
+                byte b_array[] = new byte[this.header.fieldArray[i].getFieldLength()];
+                dataInputStream.read(b_array);
+                recordObjects[i] = new String(b_array, characterSetName);
+            }
+        } catch (EOFException e) {
+
+            return null;
+        } catch (IOException e) {
+
+            throw new DBFException(e.getMessage());
+        }
+
+        return recordObjects;
+    }
+   
 
     /**
      * Reads the returns the next row in the DBF stream.
@@ -177,8 +223,7 @@ public class DBFReader extends DBFBase {
             boolean isDeleted = false;
             do {
                 if (isDeleted) {
-
-//                    dataInputStream.skip(this.header.recordLength - 1);
+                    //dataInputStream.skip(this.header.recordLength - 1);
                 }
 
                 int t_byte = dataInputStream.readByte();

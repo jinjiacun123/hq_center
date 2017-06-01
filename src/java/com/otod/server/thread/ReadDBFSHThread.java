@@ -136,7 +136,7 @@ public class ReadDBFSHThread extends Thread {
                 
                 if(symbol.equals("000000")){
                     date = (int) Double.parseDouble(String.valueOf(rowValues[5]).trim());
-                    time = Integer.parseInt(String.valueOf(rowValues[1]).trim());
+                    time = (int)Integer.parseInt(String.valueOf(rowValues[1]).trim());
                     continue;
                 }
                 

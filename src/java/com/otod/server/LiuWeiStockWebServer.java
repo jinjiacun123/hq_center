@@ -121,7 +121,7 @@ public class LiuWeiStockWebServer extends Thread {
          * 每读一次dbf延迟半秒，把读取到的新数据加入到实时处理队列中
          */
         new ReadDBFSHThread().start();
-        //new ReadDBFSZThread().start();
+        new ReadDBFSZThread().start();
         //开启两种定时器
         /**
          * 处理节假日，每20秒触发一次
@@ -256,7 +256,7 @@ public class LiuWeiStockWebServer extends Thread {
         int date = Integer.parseInt(DateUtil.formatDate(null, "yyyyMMdd"));
 
         doSHMaster();
-       // doSZMaster();
+        doSZMaster();
 
         ExchangeData exchangeData;
         Iterator it = ServerContext.getMasterMap().entrySet().iterator();

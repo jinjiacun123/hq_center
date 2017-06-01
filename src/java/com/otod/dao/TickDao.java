@@ -34,7 +34,7 @@ public class TickDao extends ParentDao{
             ps.setString(1, data.getSymbol());
             ps.setString(2, data.getCnName());
             ps.setString(3, data.getExchCode());
-            String tmp_time = String.valueOf(data.getDate())+" "+String.valueOf(data.getTime());
+            String tmp_time = String.format("%08d",data.getDate())+" "+String.format("%06d",data.getTime());
             ps.setString(4, DateUtil.formatDate(DateUtil.parseDate(tmp_time, "yyyyMMdd HHmmss"),"yyyy-MM-dd HH:mm:ss"));
             ps.setDouble(5, data.getAsk1Price());
             ps.setDouble(6, data.getAsk1Volume());
