@@ -22,7 +22,10 @@ import com.otod.db.Connector;
 import com.otod.db.MysqlConnector;
 
 import com.otod.util.ApplicationConstant;
+import com.otod.util.Config;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -55,7 +58,16 @@ public class ChartToDBThread extends Thread {
                     // 分时数据数库处理
                     doMinute((MinuteData) data);
                 }else if(data instanceof TickData){
-                    doTick((TickData) data);
+                    if (((TickData)data).getDbOperType() == ApplicationConstant.DB_SAVE) {
+                        // 分笔数据库处理
+                         List<TickData> tickList = ServerContext.getTickList();
+                         tickList.add((TickData)data);
+                         if(tickList.size()>Config.MAX_TICKS_COUNT || ServerContext.getChartToDBQueue().isEmpty()){                            
+                            doTick(tickList);
+                            tickList.clear();
+                        }
+                    }
+                    //doTick((TickData) data);
                 }
 
             } catch (InterruptedException e) {
@@ -65,18 +77,24 @@ public class ChartToDBThread extends Thread {
         }
     }
     
-    public void doTick(TickData tickData){
+    public void doTick(List<TickData> tickList){
          Connector connector = null;
         try {
             connector = new MysqlConnector();
             // 分时行情表数据库操作对象
             TickDao tickDao = new TickDao();
             tickDao.setConnector(connector);
-
-            if (tickData.getDbOperType() == ApplicationConstant.DB_SAVE) {
+            //批量写入分笔数据
+            //tickDao.batchSave(tickList);
+            tickDao.batchSaveString(tickList);
+            
                 // 如果此分时行情的数据库操作标识为”保存“，则向分时行情表中插入此数据
-                tickDao.save(tickData);
-            }
+                //tickDao.save(tickData);
+                //保存到队列中，依据时间改变批量插入分笔数据
+               
+                //if(tickData.getTime() != tickList.get(0).getTime()){
+              //  System.out.println(tickData.getSymbol());
+           
         } finally {
             if (connector != null) {
                 connector.close();

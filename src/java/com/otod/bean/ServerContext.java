@@ -13,6 +13,7 @@ import com.otod.bean.quote.finance.FinanceData;
 import com.otod.bean.quote.snapshot.ForexSnapshot;
 import com.otod.bean.quote.snapshot.Snapshot;
 import com.otod.bean.quote.snapshot.SnapshotQueue;
+import com.otod.bean.quote.tick.TickData;
 import com.otod.bean.quote.tick.TickQueue;
 import com.otod.bean.quote.tradetime.PeriodTime;
 import com.otod.bean.quote.tradetime.TimeNode;
@@ -54,6 +55,7 @@ public class ServerContext {
     private static ConcurrentHashMap<String, KLineQueue> monthMap = new ConcurrentHashMap<String, KLineQueue>();
     private static ConcurrentHashMap<String, SnapshotQueue> listMap  = new ConcurrentHashMap<String, SnapshotQueue>();
     private static ConcurrentHashMap<String, TickQueue> tickMap = new ConcurrentHashMap<String, TickQueue>();
+    private static List<TickData> tickList = new ArrayList<TickData>();
     private static LinkedBlockingQueue<Object> chartToDBQueue = new LinkedBlockingQueue<Object>();
     private static LinkedBlockingQueue<Snapshot> quoteToDBQueue = new LinkedBlockingQueue<Snapshot>();
     private static boolean authorizeFlag = true;
@@ -127,6 +129,7 @@ public class ServerContext {
     */
     //finance
     private static Map<String, FinanceData> financeMap  = new HashMap<String, FinanceData>();
+    private static int lastTickTime = 0;
 
     public static ConcurrentHashMap<String, Snapshot> getSnapshotMap() {
         return snapshotMap;
@@ -299,6 +302,14 @@ public class ServerContext {
     public static void setTickMap(ConcurrentHashMap<String, TickQueue> tickMap) {
         ServerContext.tickMap = tickMap;
     }
+    
+    public static List<TickData> getTickList(){
+        return tickList;
+    }
+    
+    public static void setTickList(List<TickData> tickList){
+        ServerContext.tickList = tickList;
+    }
 
     public static LinkedBlockingQueue<Snapshot> getRtSnapshotQueue() {
         return rtSnapshotQueue;
@@ -394,5 +405,13 @@ public class ServerContext {
     
     public static void setCodeMarketMap(ConcurrentHashMap<String,String> codeMarketMap){
         ServerContext.codeMarketMap = codeMarketMap;
+    }
+    
+    public static void setLastTickTime(int lastTickTime){
+        ServerContext.lastTickTime = lastTickTime;
+    }
+    
+    public static int getLastTickTime(){
+        return lastTickTime;
     }
 }

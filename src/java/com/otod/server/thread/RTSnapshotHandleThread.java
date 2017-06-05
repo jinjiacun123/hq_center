@@ -80,6 +80,7 @@ public class RTSnapshotHandleThread extends Thread {
                         continue;
                     }
 */
+                    ServerContext.setLastTickTime(snapshot.getQuoteTime());
                     doTick(snapshot.getSymbol());
                     hSnapshot.updateSnapshot(snapshot);
 //                    ServerContext.getQuoteToDBQueue().add(hSnapshot);

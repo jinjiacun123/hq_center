@@ -28,6 +28,7 @@ public class Config {
     public final static String FILE_SPLITE = rb_config.getString("fileSplite");
     public final static String DBF_SH      = rb_config.getString("dbfSh");
     public final static String DBF_SZ      = rb_config.getString("dbfSz");
+    public final static int MAX_TICKS_COUNT = Integer.parseInt(rb_config.getString("maxtickscount"));
     
     public final static int TYPE_SH = 0;
     public final static int TYPE_SZ = 1;
