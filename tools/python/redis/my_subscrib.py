@@ -11,28 +11,34 @@ import threading
 
 class hq_test():
 	def __init__(self):
-		self.queue = concurrent_queue(10)
+		self.queue = concurrent_queue(10000)
 	
 	def consumer(self):
 		while True:
 			data = self.queue.get()
-			print 'data:',data
+			#print 'data:',data
 			save("./"+data['time']+".my_test_data", data['data'])
 			record_len = len(data['data'])/144
-			print 'record_len:',record_len
+			#print 'record_len:',record_len
 			for i in range(0, record_len):
 				buff = data['data'][i*144:i*144+144]
 				t = struct.unpack('2i10s10s29f', buff)
-				print t
+				#print t
 
 	def product(self):
 		rc = redis.Redis(host='112.84.186.241', port=6379)
 		ps = rc.pubsub()
 		ps.subscribe(['stest1', 'eg'])
+		index = 0
 		while True:
 			for item in ps.listen():
 				if item['type'] == 'message':
+					my_buf = item['data']
+					buf    = my_buf[0:4]
+					t = struct.unpack("i",buf)
+					print 'index:',index,',t:',t[0],',cur_time',str(time.time())
 					self.queue.put({'time':datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S"),'data':item['data']})
+					index = index + 1
 
 	def run(self):
 		t1 = threading.Thread(target = self.consumer)
@@ -50,8 +56,8 @@ class hq():
 	def consumer(self):
 		while True:
 			data = self.queue.get()
-			print 'dir:',self.my_dir,',data:',data
-			#save(self.my_dir+data['time']+".data", data['data']
+		#	print 'dir:',self.my_dir,',data:',data
+			save(self.my_dir+data['time']+".data", data['data'])
 
 	def product(self):
 		rc = redis.Redis(host='112.84.186.241', port=6379)
@@ -60,6 +66,7 @@ class hq():
 		for item in ps.listen():
 			if item['type'] == 'message':
 				self.queue.put({'time':str(time.time()),'data':item['data']})
+				print 'recive a message'
 
 	def run(self):
 		t1 = threading.Thread(target = self.consumer)

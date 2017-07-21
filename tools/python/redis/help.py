@@ -8,6 +8,7 @@ import os
 import Queue
 import threading
 from optparse import OptionParser
+import time
 
 #safe queue
 class concurrent_queue:
@@ -140,6 +141,17 @@ def to_byte(file_path):
 
 def reverse(s):
 	return s[::-1]
+
+def timestamp_datetime(value):
+	format = '%Y-%m-%d %H:%M:%S'
+	value = time.localtime(value)
+	dt = time.strftime(format, value)
+	return dt
+
+def datetime_timestamp(dt):
+	time.strptime(dt, '%Y-%m-%d %H:%M:%S')
+	s = time.mktime(time.strptime(dt, '%Y-%m-%d %H:%M:%S'))
+	return int(s)
 
 def main():
 	parser = OptionParser()
