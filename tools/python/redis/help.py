@@ -9,6 +9,7 @@ import Queue
 import threading
 from optparse import OptionParser
 import time
+import MySQLdb
 
 #safe queue
 class concurrent_queue:
@@ -152,6 +153,24 @@ def datetime_timestamp(dt):
 	time.strptime(dt, '%Y-%m-%d %H:%M:%S')
 	s = time.mktime(time.strptime(dt, '%Y-%m-%d %H:%M:%S'))
 	return int(s)
+
+#insert into mysql
+def data_to_mysql(sql_template, data, db_info):
+	conn = MySQLdb.connect(host=db_info['host'], 
+						   port=db_info['port'], 
+						   user=db_info['user'], 
+						   passwd=db_info['passwd'],
+						   db=db_info['db'])
+
+	cur =conn.cursor()
+
+	for item in data:	
+		cur.execute(sql_template % item);	
+
+	cur.close()
+	conn.commit()
+	conn.close()
+	pass
 
 def main():
 	parser = OptionParser()
